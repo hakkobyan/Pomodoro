@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { useEffect, useRef, useState } from "react";
 import "./styles.css";
 
 const STORAGE_KEYS = {
@@ -37,6 +36,28 @@ export default function App() {
   const [tasks, setTasks] = useStoredList(STORAGE_KEYS.tasks);
   const [taskText, setTaskText] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const taskListRef = useRef(null);
+
+  useEffect(() => {
+    function syncPointer(event) {
+      const x = event.clientX.toFixed(2);
+      const y = event.clientY.toFixed(2);
+      const xp = (event.clientX / window.innerWidth).toFixed(2);
+
+      document.documentElement.style.setProperty("--x", x);
+      document.documentElement.style.setProperty("--y", y);
+      document.documentElement.style.setProperty("--xp", xp);
+    }
+
+    window.addEventListener("pointermove", syncPointer);
+    return () => window.removeEventListener("pointermove", syncPointer);
+  }, []);
+
+  useEffect(() => {
+    if (taskListRef.current) {
+      taskListRef.current.scrollTop = taskListRef.current.scrollHeight;
+    }
+  }, [tasks]);
 
   function addTask(event) {
     event.preventDefault();
@@ -46,7 +67,7 @@ export default function App() {
       return;
     }
 
-    setTasks((currentTasks) => [createItem(text), ...currentTasks]);
+    setTasks((currentTasks) => [...currentTasks, createItem(text)]);
     setTaskText("");
   }
 
@@ -68,38 +89,50 @@ export default function App() {
           >
             Settings
           </button>
-          {settingsOpen ? (
-            <div id="settings-popup" className="settings-popup" role="dialog">
-              <div className="settings-popup-title">Settings</div>
-              <button type="button" onClick={() => setSettingsOpen(false)}>
-                Close
-              </button>
-            </div>
-          ) : null}
         </div>
       </header>
+      {settingsOpen ? (
+        <div className="settings-overlay" role="presentation">
+          <div
+            id="settings-popup"
+            className="settings-popup"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-title"
+          >
+            <div id="settings-title" className="settings-popup-title">
+              Settings
+            </div>
+            <button type="button" onClick={() => setSettingsOpen(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      ) : null}
       <section className="board" aria-label="Pomodoro board frame">
         <div className="board-row board-row-top">
-          <section className="panel panel-small" aria-label="Focus summary space" />
+          <section className="panel panel-small" aria-labelledby="timer-title">
+            <div className="panel-header">
+              <h1 id="timer-title">Timer</h1>
+            </div>
+          </section>
           <section className="panel panel-wide" aria-labelledby="tasks-title">
             <div className="panel-header">
               <h1 id="tasks-title">Tasks</h1>
-              <span>{tasks.length}</span>
             </div>
             <form className="entry-form" onSubmit={addTask}>
               <div className="entry-row">
-                <Input
+                <input
                   id="task-input"
                   type="text"
-                  label="Add task"
                   value={taskText}
-                  onChange={setTaskText}
+                  onChange={(event) => setTaskText(event.target.value)}
                   placeholder="What needs focus?"
                 />
                 <button type="submit">Add</button>
               </div>
             </form>
-            <ul className="item-list" aria-label="Saved tasks">
+            <ul ref={taskListRef} className="item-list" aria-label="Saved tasks">
               {tasks.map((task) => (
                 <li key={task.id}>
                   <span>{task.text}</span>
