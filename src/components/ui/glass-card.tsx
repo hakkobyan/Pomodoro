@@ -18,7 +18,6 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
           className={cn(
             "relative rounded-2xl border border-white/20",
             "bg-white/[0.04] backdrop-blur-xl",
-            "shadow-[0_8px_32px_rgba(0,0,0,0.22)]",
             "before:absolute before:inset-0 before:rounded-2xl",
             "before:bg-linear-to-b before:from-white/10 before:to-transparent before:pointer-events-none",
             "after:absolute after:inset-px after:rounded-[calc(1rem-1px)]",

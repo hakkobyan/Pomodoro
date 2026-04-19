@@ -755,6 +755,7 @@ body {
   width: 100%;
   min-width: 0;
   min-height: 0;
+  background-color: rgb(0 0 0 / 4%) !important;
 }
 
 .glass-card-shell > .relative.z-10 {
@@ -1470,6 +1471,11 @@ body {
   margin-top: 22px;
 }
 
+.chart-grid-empty {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
 .chart-mini-card {
   position: relative;
   display: grid;
@@ -1503,6 +1509,10 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 300ms ease;
+}
+
+.chart-empty-card {
+  min-height: 100%;
 }
 
 .chart-mini-card:hover::after {
@@ -1727,7 +1737,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.48;
+  opacity: 0.4;
 }
 
 .gradient-background-animation-copy {
@@ -1768,14 +1778,14 @@ body {
     radial-gradient(circle at 18% 28%, rgb(94 162 255 / 0.22), transparent 22%),
     radial-gradient(circle at 78% 24%, rgb(170 102 255 / 0.18), transparent 24%),
     radial-gradient(circle at 55% 72%, rgb(237 124 203 / 0.14), transparent 26%);
-  opacity: 0.88;
+  opacity: 0.78;
   filter: blur(18px);
 }
 
 .gradient-background-orb {
   border-radius: 999px;
   filter: blur(58px);
-  opacity: 0.72;
+  opacity: 0.64;
   transform: translate3d(0, 0, 0);
 }
 
@@ -2478,6 +2488,12 @@ body {
   .mini-chart {
     width: 100%;
   }
+}
+
+.panel-header h1::after,
+.panel-header h2::after {
+  content: none;
+  animation: none !important;
 }
 
 .top-menu-frame {

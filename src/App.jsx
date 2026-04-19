@@ -165,7 +165,7 @@ function MiniChart({ data }) {
 function GlassCard({ className = "", children }) {
   return (
     <div className={cn("glass-card-frame", className)}>
-      <EinGlassCard glowEffect className="glass-card-shell">
+      <EinGlassCard glowEffect={false} className="glass-card-shell">
         {children}
       </EinGlassCard>
     </div>
@@ -733,19 +733,8 @@ export default function App() {
             <div className="panel-header">
               <h2 id="activity-title">Charts</h2>
             </div>
-            <div className="chart-grid">
-                <div className="chart-mini-card">
-                  <MiniChart data={focusChartData} />
-                </div>
-                <div className="chart-mini-card chart-placeholder">
-                  <span>Focus</span>
-                </div>
-                <div className="chart-mini-card chart-placeholder">
-                  <span>Tasks</span>
-                </div>
-                <div className="chart-mini-card chart-placeholder">
-                  <span>Sessions</span>
-                </div>
+            <div className="chart-grid chart-grid-empty">
+                <div className="chart-mini-card chart-empty-card" aria-label="Empty charts card" />
             </div>
           </section>
           </GlassCard>
