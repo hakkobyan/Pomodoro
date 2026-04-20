@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Settings, Trash2 } from "lucide-react";
 import { AnimatedCircularProgressBar } from "./components/ui/animated-circular-progress-bar";
+import {
+  GlassSelect,
+  GlassSelectContent,
+  GlassSelectItem,
+  GlassSelectTrigger,
+  GlassSelectValue,
+} from "./components/glass-select";
 import { GlassCard as EinGlassCard } from "./components/ui/glass-card";
 import { GlassInput } from "./components/ui/glass-input";
 import GradientBackground from "./components/ui/gradient-background";
@@ -322,6 +329,9 @@ export default function App() {
   const taskListSession = selectedSession ?? activeSession;
   const isViewingTaskHistory = Boolean(taskHistorySession);
   const canEditTaskList = Boolean(taskListSession && taskListSession.id === activeSessionId);
+  const focusableTasks = activeSessionId
+    ? tasks.filter((task) => task.sessionId === activeSessionId)
+    : tasks;
   const visibleTasks = taskListSession
     ? [
         ...tasks
@@ -694,7 +704,22 @@ export default function App() {
                   <div className="timer-display">{formatTimer(timerSeconds)}</div>
                 </div>
                 <div className="timer-task">
-                  <strong>{activeTask ? activeTask.text : "Choose a task"}</strong>
+                  <GlassSelect
+                    value={activeTaskId ?? ""}
+                    onValueChange={selectTask}
+                    disabled={focusableTasks.length === 0}
+                  >
+                    <GlassSelectTrigger className="timer-task-select h-6 rounded-lg px-2 py-0.5 text-[10px]" aria-label="Choose task">
+                      <GlassSelectValue placeholder="Choose a task" />
+                    </GlassSelectTrigger>
+                    <GlassSelectContent className="max-h-36 rounded-lg">
+                      {focusableTasks.map((task) => (
+                        <GlassSelectItem key={task.id} value={task.id} className="py-0.5 pl-7 text-[10px]">
+                          {task.text}
+                        </GlassSelectItem>
+                      ))}
+                    </GlassSelectContent>
+                  </GlassSelect>
                 </div>
               <div className="timer-actions">
                 <button
