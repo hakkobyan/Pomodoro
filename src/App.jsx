@@ -215,7 +215,7 @@ function MiniChart({ data }) {
   );
 }
 
-function WeeklyTimeSpentChart({ session }) {
+function WeeklyTimeSpentChart({ session, animationEnabled }) {
   const days = [
     { short: "Mon", full: "Monday" },
     { short: "Tue", full: "Tuesday" },
@@ -249,6 +249,7 @@ function WeeklyTimeSpentChart({ session }) {
   const timeTicks = [roundedMaxMinutes, roundedMaxMinutes * 0.75, roundedMaxMinutes * 0.5, roundedMaxMinutes * 0.25];
   const hasData = chartData.some((item) => item.seconds > 0);
   const activeDay = sessionDayIndex;
+  const demoHeights = ["68%", "82%", "96%", "74%", "88%", "64%", "100%"];
 
   return (
     <div className="weekly-chart" aria-label="Time spent by day of week">
@@ -270,9 +271,10 @@ function WeeklyTimeSpentChart({ session }) {
             >
               <div className="weekly-chart-track">
                 <div
-                  className="weekly-chart-bar"
+                  className={`weekly-chart-bar${animationEnabled ? " is-animating" : ""}`}
                   style={{
-                    height: hasData ? `${Math.max(8, (item.seconds / scaleMaxSeconds) * 100)}%` : "0%",
+                    height: hasData ? demoHeights[index] : "0%",
+                    "--weekly-wave-delay": `${index * 220}ms`,
                   }}
                   title={`${item.full}: ${formatSpentTime(item.seconds)}`}
                 />
@@ -388,6 +390,7 @@ export default function App() {
   const [timerMode, setTimerMode] = useState("focus");
   const [timerRunning, setTimerRunning] = useState(false);
   const [activeChartTab, setActiveChartTab] = useState("time");
+  const [chartAnimationEnabled, setChartAnimationEnabled] = useState(true);
   const [activeTaskId, setActiveTaskId] = useState(null);
   const [activeSessionId, setActiveSessionId] = useState(null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -466,6 +469,27 @@ export default function App() {
 
     window.addEventListener("pointermove", syncPointer);
     return () => window.removeEventListener("pointermove", syncPointer);
+  }, []);
+
+  useEffect(() => {
+    function handleAnimationToggle(event) {
+      const target = event.target;
+
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName))
+      ) {
+        return;
+      }
+
+      if (event.key.toLowerCase() === "b") {
+        setChartAnimationEnabled((currentValue) => !currentValue);
+      }
+    }
+
+    window.addEventListener("keydown", handleAnimationToggle);
+    return () => window.removeEventListener("keydown", handleAnimationToggle);
   }, []);
 
   useEffect(() => {
@@ -1189,7 +1213,10 @@ export default function App() {
             <div className="chart-grid chart-grid-empty">
                 <div className="chart-mini-card chart-empty-card">
                   {activeChartTab === "time" ? (
-                  <WeeklyTimeSpentChart session={summarySession} />
+                  <WeeklyTimeSpentChart
+                    session={summarySession}
+                    animationEnabled={chartAnimationEnabled}
+                  />
                   ) : (
                   <TaskDoneChart tasks={chartTasks} session={summarySession} />
                   )}
