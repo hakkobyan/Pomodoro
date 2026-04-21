@@ -2117,7 +2117,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.4;
+  opacity: 0.26;
 }
 
 .gradient-background-animation-copy {
@@ -2158,8 +2158,8 @@ body {
     radial-gradient(circle at 18% 28%, rgb(94 162 255 / 0.22), transparent 22%),
     radial-gradient(circle at 78% 24%, rgb(170 102 255 / 0.18), transparent 24%),
     radial-gradient(circle at 55% 72%, rgb(237 124 203 / 0.14), transparent 26%);
-  opacity: 0.78;
-  filter: blur(18px);
+  opacity: 0.62;
+  filter: blur(22px);
 }
 
 .gradient-background-orb {

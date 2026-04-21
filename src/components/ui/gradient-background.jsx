@@ -17,7 +17,7 @@ export default function GradientBackground() {
         pointerColor="216, 164, 255"
         size="70%"
         blendingValue="screen"
-        interactive
+        interactive={false}
       />
       <div className="gradient-background-orb gradient-background-orb-blue" />
       <div className="gradient-background-orb gradient-background-orb-yellow" />
