@@ -3038,11 +3038,17 @@ body {
   html,
   body,
   #root {
+    height: auto;
     min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
   }
 
   .app-shell {
+    height: auto;
     min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
     gap: 0.75rem;
     padding: 0.75rem;
   }
@@ -3064,6 +3070,7 @@ body {
   .board {
     height: auto;
     min-height: 0;
+    max-height: none;
     overflow: visible;
   }
 
@@ -3073,6 +3080,8 @@ body {
     display: flex;
     flex-direction: column;
     flex: 0 0 auto;
+    height: auto;
+    max-height: none;
     overflow: visible;
   }
 
@@ -3155,6 +3164,12 @@ body {
     grid-auto-rows: auto;
   }
 
+  .panel-wide .item-list {
+    max-height: none;
+    overflow: visible;
+    overscroll-behavior: auto;
+  }
+
   .item-list li,
   .item-list li.is-session-task,
   .item-list li.item-list-empty {
@@ -3212,7 +3227,9 @@ body {
   }
 
   .session-summary-arrows {
+    width: auto;
     grid-template-columns: repeat(3, minmax(0, 2.5rem));
+    grid-auto-flow: column;
     justify-content: start;
   }
 
@@ -3331,7 +3348,7 @@ body {
   }
 
   .timer-actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .item-list li,

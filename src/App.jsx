@@ -390,6 +390,8 @@ export default function App() {
   const taskListRef = useRef(null);
   const taskCountRef = useRef(tasks.length);
   const activeSessionBaseRef = useRef({ durationSeconds: 0, resumedAt: 0 });
+  const sessionSwipeRef = useRef({ x: null, y: null });
+  const taskSwipeRef = useRef({ x: null, y: null, taskId: null });
   const activeTask = tasks.find((task) => task.id === activeTaskId);
   const activeSession = sessions.find((session) => session.id === activeSessionId);
   const selectedSession = sessions.find((session) => session.id === selectedSessionId);
@@ -726,6 +728,66 @@ export default function App() {
     setTimerSeconds(nextTask?.remainingFocusSeconds ?? focusDuration);
   }
 
+  function moveSelectedTask(direction, baseTaskId = activeTaskId) {
+    if (visibleTasks.length === 0) {
+      return;
+    }
+
+    const selectableTasks = visibleTasks.filter((task) => !task.isDeleted);
+
+    if (selectableTasks.length === 0) {
+      return;
+    }
+
+    const currentTaskId = baseTaskId ?? selectableTasks[0].id;
+    const currentIndex = selectableTasks.findIndex((task) => task.id === currentTaskId);
+    const safeIndex = currentIndex >= 0 ? currentIndex : 0;
+    const nextIndex = (safeIndex + direction + selectableTasks.length) % selectableTasks.length;
+
+    selectTask(selectableTasks[nextIndex].id);
+  }
+
+  function handleTaskSwipeStart(taskId, event) {
+    const target = event.target;
+
+    if (
+      target instanceof HTMLElement &&
+      (target.closest("button") || target.closest("label") || target.closest("input"))
+    ) {
+      taskSwipeRef.current = { x: null, y: null, taskId: null };
+      return;
+    }
+
+    const touch = event.touches[0];
+
+    if (!touch) {
+      return;
+    }
+
+    taskSwipeRef.current = { x: touch.clientX, y: touch.clientY, taskId };
+  }
+
+  function handleTaskSwipeEnd(event) {
+    const { x: startX, y: startY, taskId } = taskSwipeRef.current;
+    const touch = event.changedTouches[0];
+
+    taskSwipeRef.current = { x: null, y: null, taskId: null };
+
+    if (!touch || startX === null || startY === null || !taskId) {
+      return;
+    }
+
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+    const swipeThreshold = 42;
+
+    if (Math.abs(deltaX) < swipeThreshold || Math.abs(deltaX) <= Math.abs(deltaY)) {
+      return;
+    }
+
+    moveSelectedTask(deltaX < 0 ? 1 : -1, taskId);
+  }
+
   function resetTimer() {
     setTimerRunning(false);
     setTimerMode("focus");
@@ -895,6 +957,38 @@ export default function App() {
     const currentIndex = selectedSessionIndex >= 0 ? selectedSessionIndex : sessions.length - 1;
     const nextIndex = (currentIndex + direction + sessions.length) % sessions.length;
     setSelectedSessionId(sessions[nextIndex].id);
+  }
+
+  function handleSessionSwipeStart(event) {
+    const touch = event.touches[0];
+
+    if (!touch) {
+      return;
+    }
+
+    sessionSwipeRef.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function handleSessionSwipeEnd(event) {
+    const startX = sessionSwipeRef.current.x;
+    const startY = sessionSwipeRef.current.y;
+    const touch = event.changedTouches[0];
+
+    sessionSwipeRef.current = { x: null, y: null };
+
+    if (!touch || startX === null || startY === null || sessions.length < 2) {
+      return;
+    }
+
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+    const swipeThreshold = 42;
+
+    if (Math.abs(deltaX) < swipeThreshold || Math.abs(deltaX) <= Math.abs(deltaY)) {
+      return;
+    }
+
+    moveSelectedSession(deltaX < 0 ? 1 : -1);
   }
 
   return (
@@ -1069,6 +1163,8 @@ export default function App() {
                       isViewingTaskHistory ? " is-session-task" : ""
                     }${task.completed ? " is-completed" : ""
                     }`.trim()}
+                    onTouchStart={(event) => handleTaskSwipeStart(task.id, event)}
+                    onTouchEnd={handleTaskSwipeEnd}
                   >
                     <span>{task.text}</span>
                     <span className="task-time">{formatSpentTime(task.displaySeconds)}</span>
@@ -1117,7 +1213,7 @@ export default function App() {
               </button>
             </form>
             <div className="session-summary">
-              <div>
+              <div onTouchStart={handleSessionSwipeStart} onTouchEnd={handleSessionSwipeEnd}>
                 <div className="session-summary-copy">
                   <strong>{summarySession ? summarySession.name || formatSessionDate(summarySession.startedAt) : "None"}</strong>
                   <em>{formatSpentTime(summarySession?.durationSeconds)}</em>
