@@ -1138,7 +1138,7 @@ export default function App() {
             <div className="panel-header">
               <h1 id="tasks-title">Tasks</h1>
             </div>
-            <form className="entry-form" onSubmit={addTask}>
+            <form id="task-entry-form" className="entry-form" onSubmit={addTask}>
               <div className="entry-row">
                 <GlassInput
                   className="glass-input-control"
@@ -1191,6 +1191,14 @@ export default function App() {
                 </li>
               )}
             </ul>
+            <button
+              className="entry-submit-mobile"
+              type="submit"
+              form="task-entry-form"
+              disabled={!canEditTaskList}
+            >
+              Add
+            </button>
           </section>
           </GlassCard>
         </div>
