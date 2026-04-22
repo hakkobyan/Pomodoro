@@ -82,6 +82,33 @@ function createSession(name) {
   };
 }
 
+function createAutoSessionName(existingSessions) {
+  const baseName = "new session";
+  const usedIndices = new Set();
+
+  existingSessions.forEach((session) => {
+    const match = session.name?.trim().match(/^new session(?: (\d+))?$/i);
+
+    if (!match) {
+      return;
+    }
+
+    usedIndices.add(match[1] ? Number(match[1]) : 0);
+  });
+
+  if (!usedIndices.has(0)) {
+    return baseName;
+  }
+
+  let nextIndex = 1;
+
+  while (usedIndices.has(nextIndex)) {
+    nextIndex += 1;
+  }
+
+  return `${baseName} ${nextIndex}`;
+}
+
 function formatTimer(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
@@ -299,49 +326,6 @@ function WeeklyTimeSpentChart({ sessions, selectedSession }) {
   );
 }
 
-function TaskDoneChart({ tasks, session }) {
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter((task) => task.completed).length;
-  const completionPercent = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
-  const remainingTasks = Math.max(totalTasks - completedTasks, 0);
-  const completedTaskLabels = tasks.filter((task) => task.completed).slice(0, 4);
-  const sessionTitle = session ? session.name || formatSessionDate(session.startedAt) : "No session";
-
-  return (
-    <div className="task-done-chart" aria-label="Task completion chart">
-      <div className="task-done-header">
-        <div>
-          <span>{sessionTitle}</span>
-          <strong>{completionPercent}% done</strong>
-        </div>
-        <em>{completedTasks}/{totalTasks || 0}</em>
-      </div>
-      <div className="task-done-progress" aria-hidden="true">
-        <div className="task-done-progress-fill" style={{ width: `${completionPercent}%` }} />
-      </div>
-      <div className="task-done-stats">
-        <div>
-          <strong>{completedTasks}</strong>
-          <span>Completed</span>
-        </div>
-        <div>
-          <strong>{remainingTasks}</strong>
-          <span>Remaining</span>
-        </div>
-      </div>
-      {completedTaskLabels.length > 0 ? (
-        <ul className="task-done-list">
-          {completedTaskLabels.map((task) => (
-            <li key={task.id}>{task.text}</li>
-          ))}
-        </ul>
-      ) : (
-        <div className="task-done-empty">No completed tasks yet</div>
-      )}
-    </div>
-  );
-}
-
 function GlassCard({ className = "", children }) {
   return (
     <div className={cn("glass-card-frame", className)}>
@@ -399,7 +383,6 @@ export default function App() {
   const [timerSeconds, setTimerSeconds] = useState(DEFAULT_FOCUS_MINUTES * 60);
   const [timerMode, setTimerMode] = useState("focus");
   const [timerRunning, setTimerRunning] = useState(false);
-  const [activeChartTab, setActiveChartTab] = useState("time");
   const [activeTaskId, setActiveTaskId] = useState(null);
   const [activeSessionId, setActiveSessionId] = useState(null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -428,7 +411,7 @@ export default function App() {
   const taskHistorySession = selectedSession?.id !== activeSessionId ? selectedSession : null;
   const taskListSession = selectedSession ?? activeSession;
   const isViewingTaskHistory = Boolean(taskHistorySession);
-  const canEditTaskList = Boolean(taskListSession && taskListSession.id === activeSessionId);
+  const canEditTaskList = !activeSessionId || !taskListSession || taskListSession.id === activeSessionId;
   const focusableTasks = activeSessionId
     ? tasks.filter((task) => task.sessionId === activeSessionId)
     : tasks;
@@ -464,7 +447,6 @@ export default function App() {
         displaySeconds: task.focusSeconds ?? 0,
         isDeleted: false,
       }));
-  const chartTasks = visibleTasks.filter((task) => !task.isDeleted);
   useEffect(() => {
     function syncPointer(event) {
       const xp = (event.clientX / window.innerWidth).toFixed(2);
@@ -683,11 +665,22 @@ export default function App() {
       return;
     }
 
-    if (taskListSession?.id !== activeSessionId) {
+    if (!activeSessionId) {
+      const session = createSession(createAutoSessionName(sessions));
+
+      setSessions((currentSessions) => [...currentSessions, session]);
+      setActiveSessionId(session.id);
+      setSelectedSessionId(session.id);
+      setTasks((currentTasks) => [...currentTasks, createItem(text, session.id)]);
+      setTaskText("");
       return;
     }
 
-    setTasks((currentTasks) => [...currentTasks, createItem(text, activeSessionId ?? null)]);
+    if (taskListSession && taskListSession.id !== activeSessionId) {
+      return;
+    }
+
+    setTasks((currentTasks) => [...currentTasks, createItem(text, activeSessionId)]);
     setTaskText("");
   }
 
@@ -1174,33 +1167,13 @@ export default function App() {
           </section>
           </GlassCard>
           <GlassCard className="panel-half app-intro-bottom">
-          <section className="panel" aria-labelledby="activity-title">
+          <section className="panel analytics-panel" aria-labelledby="activity-title">
             <div className="panel-header">
-              <h2 id="activity-title">Charts</h2>
-            </div>
-            <div className="chart-tabs" aria-label="Chart views">
-              <button
-                className={activeChartTab === "time" ? "is-active" : ""}
-                type="button"
-                onClick={() => setActiveChartTab("time")}
-              >
-                Time spent
-              </button>
-              <button
-                className={activeChartTab === "done" ? "is-active" : ""}
-                type="button"
-                onClick={() => setActiveChartTab("done")}
-              >
-                Task done
-              </button>
+              <h2 id="activity-title">Analytics</h2>
             </div>
             <div className="chart-grid chart-grid-empty">
-                <div className="chart-mini-card chart-empty-card">
-                  {activeChartTab === "time" ? (
-                    <WeeklyTimeSpentChart sessions={sessions} selectedSession={summarySession} />
-                  ) : (
-                    <TaskDoneChart tasks={chartTasks} session={summarySession} />
-                  )}
+                <div className="chart-mini-card chart-empty-card analytics-card">
+                  <WeeklyTimeSpentChart sessions={sessions} selectedSession={summarySession} />
                 </div>
             </div>
           </section>

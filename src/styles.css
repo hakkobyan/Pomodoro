@@ -1551,51 +1551,7 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  margin-top: 0;
-}
-
-.chart-tabs {
-  display: inline-flex;
-  width: fit-content;
-  min-width: 0;
-  align-items: center;
-  gap: 4px;
-  margin-top: 22px;
-  margin-bottom: 10px;
-  padding: 4px;
-  border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: 8px;
-  background: rgb(0 0 0 / 10%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 10%);
-}
-
-.chart-tabs button {
-  min-height: 26px;
-  min-width: 94px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: rgb(255 255 255 / 62%);
-  cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 900;
-  transition:
-    background-color 160ms ease,
-    color 160ms ease;
-}
-
-.chart-tabs button.is-active {
-  background: rgb(255 255 255 / 16%);
-  color: #ffffff;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 16%),
-    0 6px 14px rgb(0 0 0 / 10%);
-}
-
-.chart-tabs button:not(.is-active):hover {
-  background: rgb(255 255 255 / 7%);
-  color: rgb(255 255 255 / 82%);
+  margin-top: 8px;
 }
 
 .chart-grid-empty {
@@ -1609,7 +1565,7 @@ body {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  padding: 22px;
+  padding: 18px;
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 8px;
   background: rgb(255 255 255 / 4%);
@@ -1638,114 +1594,25 @@ body {
   transition: opacity 300ms ease;
 }
 
-.task-done-chart {
-  display: grid;
-  height: 100%;
-  min-height: 0;
-  gap: 14px;
-}
-
-.task-done-header {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.task-done-header > div {
-  display: grid;
-  gap: 4px;
-}
-
-.task-done-header span,
-.task-done-header em {
-  color: rgb(255 255 255 / 64%);
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 800;
-}
-
-.task-done-header strong {
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.task-done-progress {
-  position: relative;
-  height: 12px;
-  overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 14%);
-  border-radius: 999px;
-  background: rgb(255 255 255 / 8%);
-}
-
-.task-done-progress-fill {
-  height: 100%;
-  min-width: 10px;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgb(250 235 146 / 92%), rgb(158 232 255 / 92%));
-  box-shadow: 0 0 16px rgb(158 232 255 / 24%);
-}
-
-.task-done-stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.task-done-stats div {
-  display: grid;
-  gap: 4px;
-  padding: 12px;
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 8px;
-  background: rgb(255 255 255 / 4%);
-}
-
-.task-done-stats strong {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.task-done-stats span {
-  color: rgb(255 255 255 / 62%);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.task-done-list {
-  display: grid;
-  min-height: 0;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.task-done-list li,
-.task-done-empty {
-  display: grid;
-  align-items: center;
-  min-height: 34px;
-  padding: 8px 10px;
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 8px;
-  background: rgb(255 255 255 / 4%);
-  color: rgb(255 255 255 / 82%);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.task-done-empty {
-  place-items: center;
-  text-align: center;
-}
-
 .chart-empty-card {
   min-height: 100%;
+}
+
+.analytics-panel .chart-grid {
+  margin-top: 22px;
+}
+
+.analytics-card {
+  align-self: start;
+  padding: 16px;
+}
+
+.analytics-card .weekly-chart {
+  gap: 8px;
+}
+
+.analytics-card .weekly-chart-track {
+  min-height: 68px;
 }
 
 .weekly-chart {
@@ -1826,7 +1693,7 @@ body {
 .weekly-chart-track {
   position: relative;
   display: flex;
-  min-height: 86px;
+  min-height: 78px;
   align-items: end;
 }
 
@@ -2914,7 +2781,6 @@ body {
 .session-action,
 .session-stop,
 .session-continue,
-.chart-tabs,
 .chart-mini-card {
   border-color: rgb(255 255 255 / 16%) !important;
   background-color: rgb(255 255 255 / var(--card-surface-transparency, 7%)) !important;
@@ -2940,8 +2806,7 @@ body {
 .session-summary-arrows button,
 .session-action,
 .session-stop,
-.session-continue,
-.chart-tabs button.is-active {
+.session-continue {
   border-color: rgb(255 255 255 / 18%) !important;
   background-color: rgb(255 255 255 / 10%) !important;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%) !important;
