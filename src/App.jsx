@@ -447,6 +447,7 @@ export default function App() {
   const sessionSwipeRef = useRef({ x: null, y: null });
   const taskSwipeRef = useRef({ x: null, y: null, taskId: null });
   const dragStateRef = useRef({ active: false, cardId: null, lastTargetId: null });
+  const settingsCloseTimeoutRef = useRef(null);
   const activeTask = tasks.find((task) => task.id === activeTaskId);
   const activeSession = sessions.find((session) => session.id === activeSessionId);
   const selectedSession = sessions.find((session) => session.id === selectedSessionId);
@@ -561,6 +562,14 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.cardOrder, JSON.stringify(cardOrder));
   }, [cardOrder]);
+
+  useEffect(() => {
+    return () => {
+      if (settingsCloseTimeoutRef.current) {
+        window.clearTimeout(settingsCloseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!activeSessionId) {
@@ -1006,15 +1015,23 @@ export default function App() {
   }
 
   function openSettings() {
+    if (settingsCloseTimeoutRef.current) {
+      window.clearTimeout(settingsCloseTimeoutRef.current);
+      settingsCloseTimeoutRef.current = null;
+    }
     setSettingsClosing(false);
     setSettingsOpen(true);
   }
 
   function closeSettings() {
+    if (settingsCloseTimeoutRef.current) {
+      window.clearTimeout(settingsCloseTimeoutRef.current);
+    }
     setSettingsClosing(true);
-    window.setTimeout(() => {
+    settingsCloseTimeoutRef.current = window.setTimeout(() => {
       setSettingsOpen(false);
       setSettingsClosing(false);
+      settingsCloseTimeoutRef.current = null;
     }, 180);
   }
 
@@ -1173,7 +1190,7 @@ export default function App() {
                 max={timerDuration}
                 min={0}
                 value={timerProgress}
-                gaugePrimaryColor={timerMode === "rest" ? "#9ee8ff" : "#faeb92"}
+                gaugePrimaryColor={timerMode === "rest" ? "#9ee8ff" : "#00E87A"}
                 gaugeSecondaryColor="rgb(255 255 255 / 18%)"
                 className="timer-progress-ring"
               />
@@ -1485,6 +1502,14 @@ export default function App() {
         </div>
       ) : null}
       <section className={cn("board", layoutEditMode && "is-layout-editing")} aria-label="Pomodoro board frame">
+        {layoutEditMode ? (
+          <div className="layout-save-overlay">
+            <button type="button" className="layout-save-button" onClick={saveCardLayout}>
+              <Check aria-hidden="true" size={18} strokeWidth={2.8} />
+              <span>Save layout</span>
+            </button>
+          </div>
+        ) : null}
         {boardRows.map((row, index) => (
           <div
             key={`board-row-${index}`}
@@ -1494,14 +1519,6 @@ export default function App() {
           </div>
         ))}
       </section>
-      {layoutEditMode ? (
-        <div className="layout-save-overlay">
-          <button type="button" className="layout-save-button" onClick={saveCardLayout}>
-            <Check aria-hidden="true" size={18} strokeWidth={2.8} />
-            <span>Save layout</span>
-          </button>
-        </div>
-      ) : null}
     </main>
   );
 }

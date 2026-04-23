@@ -1,29 +1,23 @@
-import { BackgroundGradientAnimation } from "./background-gradient-animation";
+import GradientBlinds from "./GradientBlinds";
 
 export default function GradientBackground() {
   return (
-    <div className="gradient-background" aria-hidden="true">
-      <div className="gradient-background-base" />
-      <BackgroundGradientAnimation
-        containerClassName="gradient-background-animation"
-        className="gradient-background-animation-copy"
-        gradientBackgroundStart="rgba(5, 8, 49, 0)"
-        gradientBackgroundEnd="rgba(11, 16, 90, 0)"
-        firstColor="38, 103, 255"
-        secondColor="170, 92, 255"
-        thirdColor="236, 116, 198"
-        fourthColor="78, 44, 214"
-        fifthColor="128, 118, 255"
-        pointerColor="168, 205, 255"
-        size="62%"
-        blendingValue="screen"
-        interactive
+    <div className="ogl-background" aria-hidden="true">
+      <GradientBlinds
+        gradientColors={["#0c120f", "#050706"]}
+        angle={-27}
+        noise={0.18}
+        blindCount={12}
+        blindMinWidth={50}
+        spotlightRadius={0.5}
+        spotlightSoftness={1}
+        spotlightOpacity={1}
+        mouseDampening={0.19}
+        distortAmount={4.1}
+        shineDirection="left"
+        mirrorGradient={false}
+        mixBlendMode="lighten"
       />
-      <div className="gradient-background-orb gradient-background-orb-blue" />
-      <div className="gradient-background-orb gradient-background-orb-yellow" />
-      <div className="gradient-background-orb gradient-background-orb-pink" />
-      <div className="gradient-background-orb gradient-background-orb-lilac" />
-      <div className="gradient-background-haze" />
     </div>
   );
 }
