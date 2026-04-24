@@ -115,14 +115,18 @@ function readStoredNumber(key, fallbackValue) {
 }
 
 function sanitizeCardOrder(value) {
+  return sanitizeOrder(value, DEFAULT_CARD_ORDER);
+}
+
+function sanitizeOrder(value, validItems) {
   const source = Array.isArray(value) ? value : [];
   const uniqueItems = source.filter(
-    (entry, index) => DEFAULT_CARD_ORDER.includes(entry) && source.indexOf(entry) === index,
+    (entry, index) => validItems.includes(entry) && source.indexOf(entry) === index,
   );
 
   return [
     ...uniqueItems,
-    ...DEFAULT_CARD_ORDER.filter((entry) => !uniqueItems.includes(entry)),
+    ...validItems.filter((entry) => !uniqueItems.includes(entry)),
   ];
 }
 
@@ -218,7 +222,7 @@ function formatSpentTime(totalSeconds = 0) {
 }
 
 function formatSessionDate(value) {
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     hour: "2-digit",
@@ -472,6 +476,7 @@ export default function App() {
   );
   const [cardOrder, setCardOrder] = useState(() => readStoredCardOrder());
   const [draftCardOrder, setDraftCardOrder] = useState(() => readStoredCardOrder());
+  const [draftSessionOrder, setDraftSessionOrder] = useState(() => sessions.map((session) => session.id));
   const [layoutEditMode, setLayoutEditMode] = useState(false);
   const [draggedCardId, setDraggedCardId] = useState(null);
   const [timerSeconds, setTimerSeconds] = useState(DEFAULT_FOCUS_MINUTES * 60);
@@ -678,21 +683,27 @@ export default function App() {
       return undefined;
     }
 
-    function updateDraftCardOrder(cardId, targetCardId) {
-      if (!cardId || !targetCardId || cardId === targetCardId) {
+    function updateDraftOrder(itemId, targetItemId) {
+      if (!itemId || !targetItemId || itemId === targetItemId) {
         return;
       }
 
-      setDraftCardOrder((currentOrder) => {
-        const fromIndex = currentOrder.indexOf(cardId);
-        const toIndex = currentOrder.indexOf(targetCardId);
+      const reorder = (currentOrder) => {
+        const fromIndex = currentOrder.indexOf(itemId);
+        const toIndex = currentOrder.indexOf(targetItemId);
 
         if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) {
           return currentOrder;
         }
 
         return moveItem(currentOrder, fromIndex, toIndex);
-      });
+      };
+
+      if (activeView === "Sessions") {
+        setDraftSessionOrder(reorder);
+      } else {
+        setDraftCardOrder(reorder);
+      }
     }
 
     function handlePointerMove(event) {
@@ -701,8 +712,12 @@ export default function App() {
       }
 
       const elementAtPoint = document.elementFromPoint(event.clientX, event.clientY);
-      const cardElement = elementAtPoint?.closest?.("[data-card-id]");
-      const targetCardId = cardElement?.getAttribute("data-card-id");
+      const cardElement = activeView === "Sessions"
+        ? elementAtPoint?.closest?.("[data-session-id]")
+        : elementAtPoint?.closest?.("[data-card-id]");
+      const targetCardId = activeView === "Sessions"
+        ? cardElement?.getAttribute("data-session-id")
+        : cardElement?.getAttribute("data-card-id");
 
       if (
         !targetCardId ||
@@ -713,7 +728,7 @@ export default function App() {
       }
 
       dragStateRef.current.lastTargetId = targetCardId;
-      updateDraftCardOrder(dragStateRef.current.cardId, targetCardId);
+      updateDraftOrder(dragStateRef.current.cardId, targetCardId);
     }
 
     function finishDrag() {
@@ -730,7 +745,12 @@ export default function App() {
       window.removeEventListener("pointerup", finishDrag);
       window.removeEventListener("pointercancel", finishDrag);
     };
-  }, [layoutEditMode]);
+  }, [activeView, layoutEditMode]);
+
+  useEffect(() => {
+    const validSessionIds = sessions.map((session) => session.id);
+    setDraftSessionOrder((currentOrder) => sanitizeOrder(currentOrder, validSessionIds));
+  }, [sessions]);
 
   useEffect(() => {
     if (!editingSessionId) {
@@ -1221,13 +1241,26 @@ export default function App() {
   }
 
   function openCardEditor() {
-    setDraftCardOrder(cardOrder);
+    if (activeView === "Sessions") {
+      setDraftSessionOrder(sessions.map((session) => session.id));
+    } else {
+      setDraftCardOrder(cardOrder);
+    }
     setLayoutEditMode(true);
     closeSettings();
   }
 
   function saveCardLayout() {
-    setCardOrder(sanitizeCardOrder(draftCardOrder));
+    if (activeView === "Sessions") {
+      setSessions((currentSessions) => {
+        const sessionIds = currentSessions.map((session) => session.id);
+        const nextOrder = sanitizeOrder(draftSessionOrder, sessionIds);
+        const sessionMap = new Map(currentSessions.map((session) => [session.id, session]));
+        return nextOrder.map((sessionId) => sessionMap.get(sessionId)).filter(Boolean);
+      });
+    } else {
+      setCardOrder(sanitizeCardOrder(draftCardOrder));
+    }
     setLayoutEditMode(false);
     setDraggedCardId(null);
     dragStateRef.current = { active: false, cardId: null, lastTargetId: null };
@@ -1689,6 +1722,76 @@ export default function App() {
                 {row.map(renderCard)}
               </div>
             ))}
+          </section>
+        ) : activeView === "Sessions" ? (
+          <section className="sessions-grid-view" aria-label="Sessions grid">
+            {layoutEditMode ? (
+              <div className="layout-save-overlay">
+                <button type="button" className="layout-save-button" onClick={saveCardLayout}>
+                  <Check aria-hidden="true" size={18} strokeWidth={2.8} />
+                  <span>Save layout</span>
+                </button>
+              </div>
+            ) : null}
+            {sessions.length > 0 ? (
+              sanitizeOrder(
+                layoutEditMode ? draftSessionOrder : sessions.map((session) => session.id),
+                sessions.map((session) => session.id),
+              ).map((sessionId) => {
+                const session = sessions.find((entry) => entry.id === sessionId);
+
+                if (!session) {
+                  return null;
+                }
+
+                const sessionTasks = tasks
+                  .filter((task) => task.sessionId === session.id)
+                  .map((task) => ({
+                    id: task.id,
+                    text: task.text,
+                    seconds: session.taskSeconds?.[task.id] ?? task.focusSeconds ?? 0,
+                  }))
+                  .sort((firstTask, secondTask) => secondTask.seconds - firstTask.seconds);
+
+                return (
+                  <article
+                    key={session.id}
+                    className={cn(
+                      "sessions-grid-card",
+                      layoutEditMode && "is-layout-editing",
+                      draggedCardId === session.id && "is-dragging",
+                    )}
+                    data-session-id={session.id}
+                    onPointerDown={() => startCardDrag(session.id)}
+                  >
+                    <div className="sessions-grid-card-top">
+                      <div className="sessions-grid-card-head">
+                        <h2>{session.name || formatSessionDate(session.startedAt)}</h2>
+                        <span>{formatSessionDate(session.startedAt)}</span>
+                      </div>
+                      <div className="sessions-grid-card-time">{formatSpentTime(session.durationSeconds)}</div>
+                    </div>
+                    <div className="sessions-grid-card-tasks">
+                      {sessionTasks.length > 0 ? (
+                        sessionTasks.map((task) => (
+                          <div key={task.id} className="sessions-grid-task-row">
+                            <span>{task.text}</span>
+                            <strong>{formatSpentTime(task.seconds)}</strong>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="sessions-grid-task-empty">No tasks yet</div>
+                      )}
+                    </div>
+                    <div className="card-edit-label" aria-hidden={!layoutEditMode}>
+                      Drag to move
+                    </div>
+                  </article>
+                );
+              })
+            ) : (
+              <div className="sessions-grid-empty" />
+            )}
           </section>
         ) : (
           <section className="board board-placeholder" aria-label={`${activeView} content`} />

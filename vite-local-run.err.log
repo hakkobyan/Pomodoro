@@ -81,3 +81,15 @@
       at EnvironmentPluginContainer.transform (file:///D:/Pomodoro/node_modules/vite/dist/node/chunks/node.js:30143:51)
       at async loadAndTransform (file:///D:/Pomodoro/node_modules/vite/dist/node/chunks/node.js:24468:26)
       at async viteTransformMiddleware (file:///D:/Pomodoro/node_modules/vite/dist/node/chunks/node.js:24262:20)
+[2m22:44:59[22m [31m[1m[vite][22m[39m [31mInternal server error: Missing closing } at .sessions-grid-card[39m
+  Plugin: [35m@tailwindcss/vite:generate:serve[39m
+  File: [36mD:/Pomodoro/src/styles.css[39m
+      at Se (file:///D:/Pomodoro/node_modules/tailwindcss/dist/chunk-F4544Y4M.mjs:1:3861)
+      at yf (file:///D:/Pomodoro/node_modules/tailwindcss/dist/chunk-F4544Y4M.mjs:38:1384)
+      at uu (file:///D:/Pomodoro/node_modules/@tailwindcss/node/dist/index.mjs:10:3463)
+      at B.generate (file:///D:/Pomodoro/node_modules/@tailwindcss/vite/dist/index.mjs:1:5242)
+      at async TransformPluginContext.handler (file:///D:/Pomodoro/node_modules/@tailwindcss/vite/dist/index.mjs:1:2718)
+      at async EnvironmentPluginContainer.transform (file:///D:/Pomodoro/node_modules/vite/dist/node/chunks/node.js:30143:14)
+      at async loadAndTransform (file:///D:/Pomodoro/node_modules/vite/dist/node/chunks/node.js:24468:26)
+      at async viteTransformMiddleware (file:///D:/Pomodoro/node_modules/vite/dist/node/chunks/node.js:24262:20)
+[2m22:44:59[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/styles.css. This could be due to syntax errors or importing non-existent modules. (see errors above)
