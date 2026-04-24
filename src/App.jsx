@@ -1550,7 +1550,26 @@ export default function App() {
             </button>
           </div>
           <div className="chart-grid chart-grid-empty">
-            <div className="chart-mini-card chart-empty-card analytics-card">
+            <div
+              className="chart-mini-card chart-empty-card analytics-card analytics-card-link"
+              role="button"
+              tabIndex={layoutEditMode ? -1 : 0}
+              onClick={() => {
+                if (!layoutEditMode) {
+                  setActiveView("Analytics");
+                }
+              }}
+              onKeyDown={(event) => {
+                if (layoutEditMode) {
+                  return;
+                }
+
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setActiveView("Analytics");
+                }
+              }}
+            >
               <WeeklyTimeSpentChart sessions={sessions} selectedSession={summarySession} />
             </div>
           </div>
