@@ -260,6 +260,42 @@ function formatChartTick(minutes) {
   return `${Math.round(minutes)}m`;
 }
 
+function buildRecentActivityData(sessions) {
+  const formatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (6 - index));
+
+    return {
+      key: date.getTime(),
+      label: formatter.format(date),
+      value: 0,
+    };
+  });
+
+  const valuesByDay = new Map(days.map((day) => [day.key, day]));
+
+  sessions.forEach((session) => {
+    const date = new Date(session.startedAt);
+
+    if (Number.isNaN(date.getTime())) {
+      return;
+    }
+
+    const sessionDayKey = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const matchingDay = valuesByDay.get(sessionDayKey);
+
+    if (matchingDay) {
+      matchingDay.value += session.durationSeconds ?? 0;
+    }
+  });
+
+  return days;
+}
+
 function MiniChart({ data }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [displayValue, setDisplayValue] = useState(null);
@@ -510,6 +546,21 @@ export default function App() {
   const selectedSessionIndex = sessions.findIndex((session) => session.id === selectedSessionId);
   const sessionStreak = calculateSessionStreak(sessions);
   const dashboardDate = formatDashboardDate();
+  const totalFocusSeconds = sessions.reduce(
+    (totalSeconds, session) => totalSeconds + (session.durationSeconds ?? 0),
+    0,
+  );
+  const completedTaskCount = tasks.filter((task) => task.completed).length;
+  const completionRate = tasks.length > 0 ? Math.round((completedTaskCount / tasks.length) * 100) : 0;
+  const averageSessionSeconds = sessions.length > 0 ? Math.round(totalFocusSeconds / sessions.length) : 0;
+  const longestSessionSeconds = sessions.reduce(
+    (longestSeconds, session) => Math.max(longestSeconds, session.durationSeconds ?? 0),
+    0,
+  );
+  const recentActivityData = buildRecentActivityData(sessions);
+  const topTaskAnalytics = [...tasks]
+    .sort((firstTask, secondTask) => (secondTask.focusSeconds ?? 0) - (firstTask.focusSeconds ?? 0))
+    .slice(0, 5);
   const focusDuration = focusMinutes * 60;
   const breakDuration = breakMinutes * 60;
   const timerDuration = timerMode === "rest" ? breakDuration : focusDuration;
@@ -554,6 +605,38 @@ export default function App() {
         displaySeconds: task.focusSeconds ?? 0,
         isDeleted: false,
       }));
+  const allTasksOverview = tasks
+    .map((task) => {
+      const session = sessions.find((entry) => entry.id === task.sessionId);
+
+      return {
+        id: task.id,
+        text: task.text,
+        completed: task.completed ?? false,
+        focusSeconds: task.focusSeconds ?? 0,
+        sessionLabel: session?.name || (task.sessionId ? "Saved session" : "No session"),
+        createdAt: task.createdAt,
+      };
+    })
+    .sort((firstTask, secondTask) => {
+      if ((firstTask.completed ? 1 : 0) !== (secondTask.completed ? 1 : 0)) {
+        return Number(firstTask.completed) - Number(secondTask.completed);
+      }
+
+      return new Date(secondTask.createdAt).getTime() - new Date(firstTask.createdAt).getTime();
+    });
+  const allTaskClasses = [
+    {
+      id: "open",
+      title: "Open",
+      items: allTasksOverview.filter((task) => !task.completed),
+    },
+    {
+      id: "completed",
+      title: "Completed",
+      items: allTasksOverview.filter((task) => task.completed),
+    },
+  ];
   useEffect(() => {
     function syncPointer(event) {
       const xp = (event.clientX / window.innerWidth).toFixed(2);
@@ -1586,7 +1669,6 @@ export default function App() {
     { label: "Sessions", icon: Clock3 },
     { label: "Tasks", icon: ListTodo },
     { label: "Analytics", icon: BarChart3 },
-    { label: "Settings", icon: Settings },
   ];
 
   return (
@@ -1811,6 +1893,159 @@ export default function App() {
             ) : (
               <div className="sessions-grid-empty" />
             )}
+          </section>
+        ) : activeView === "Tasks" ? (
+          <section className="tasks-view" aria-label="All tasks overview">
+            <div className="tasks-view-summary">
+              <article className="tasks-view-stat">
+                <span>Total tasks</span>
+                <strong>{allTasksOverview.length}</strong>
+              </article>
+              <article className="tasks-view-stat">
+                <span>Open</span>
+                <strong>{allTaskClasses[0].items.length}</strong>
+              </article>
+              <article className="tasks-view-stat">
+                <span>Completed</span>
+                <strong>{allTaskClasses[1].items.length}</strong>
+              </article>
+            </div>
+            <div className="tasks-class-grid">
+              {allTaskClasses.map((taskClass) => (
+                <section key={taskClass.id} className="panel tasks-class-panel" aria-labelledby={`tasks-class-${taskClass.id}`}>
+                  <div className="panel-header">
+                    <h2 id={`tasks-class-${taskClass.id}`}>{taskClass.title}</h2>
+                    <div className="analytics-summary-label">{taskClass.items.length}</div>
+                  </div>
+                  {taskClass.items.length > 0 ? (
+                    <div className="tasks-class-list">
+                      {taskClass.items.map((task) => (
+                        <div
+                          key={task.id}
+                          className={cn("tasks-class-row", task.completed && "is-completed")}
+                        >
+                          <label className="task-checkbox" aria-label={`Mark ${task.text} as done`}>
+                            <input
+                              type="checkbox"
+                              checked={task.completed}
+                              onChange={() => toggleTaskCompleted(task.id)}
+                              disabled={layoutEditMode}
+                            />
+                            <span aria-hidden="true" />
+                          </label>
+                          <div className="tasks-class-copy">
+                            <strong>{task.text}</strong>
+                            <span>{task.sessionLabel}</span>
+                          </div>
+                          <div className="tasks-class-time">{formatSpentTime(task.focusSeconds)}</div>
+                          <button
+                            type="button"
+                            aria-label={`Delete task ${task.text}`}
+                            onClick={() => removeTask(task.id)}
+                            disabled={layoutEditMode}
+                          >
+                            <Trash2 aria-hidden="true" size={15} strokeWidth={2.5} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="placeholder-panel-body">No tasks in this class yet.</div>
+                  )}
+                </section>
+              ))}
+            </div>
+          </section>
+        ) : activeView === "Analytics" ? (
+          <section className="analytics-view" aria-label="Whole activity analytics">
+            <div className="analytics-summary-grid">
+              <article className="analytics-summary-card">
+                <span>Total focus</span>
+                <strong>{formatSpentTime(totalFocusSeconds)}</strong>
+              </article>
+              <article className="analytics-summary-card">
+                <span>Sessions</span>
+                <strong>{sessions.length}</strong>
+              </article>
+              <article className="analytics-summary-card">
+                <span>Tasks done</span>
+                <strong>{completedTaskCount}</strong>
+              </article>
+              <article className="analytics-summary-card">
+                <span>Completion rate</span>
+                <strong>{completionRate}%</strong>
+              </article>
+            </div>
+            <div className="analytics-detail-grid">
+              <section className="panel analytics-panel" aria-labelledby="analytics-weekly-title">
+                <div className="panel-header">
+                  <h2 id="analytics-weekly-title">Whole activity</h2>
+                  <div className="analytics-summary-label">{dashboardDate}</div>
+                </div>
+                <div className="chart-grid chart-grid-empty">
+                  <div className="chart-mini-card chart-empty-card analytics-card">
+                    <WeeklyTimeSpentChart sessions={sessions} selectedSession={null} />
+                  </div>
+                </div>
+              </section>
+              <section className="panel analytics-panel" aria-labelledby="analytics-recent-title">
+                <div className="panel-header">
+                  <h2 id="analytics-recent-title">Recent activity</h2>
+                  <div className="analytics-summary-label">Last 7 days</div>
+                </div>
+                <div className="chart-grid chart-grid-empty">
+                  <div className="chart-mini-card chart-empty-card analytics-card">
+                    <MiniChart data={recentActivityData} />
+                  </div>
+                </div>
+              </section>
+              <section className="panel analytics-panel" aria-labelledby="analytics-top-tasks-title">
+                <div className="panel-header">
+                  <h2 id="analytics-top-tasks-title">Top tasks</h2>
+                  <div className="analytics-summary-label">{topTaskAnalytics.length}</div>
+                </div>
+                {topTaskAnalytics.length > 0 ? (
+                  <div className="analytics-task-list">
+                    {topTaskAnalytics.map((task, index) => (
+                      <div key={task.id} className="analytics-task-row">
+                        <div className="analytics-task-rank">{index + 1}</div>
+                        <div className="analytics-task-copy">
+                          <strong>{task.text}</strong>
+                          <span>{task.completed ? "Completed" : "Open"}</span>
+                        </div>
+                        <div className="analytics-task-time">{formatSpentTime(task.focusSeconds ?? 0)}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="placeholder-panel-body">No focused task data yet.</div>
+                )}
+              </section>
+              <section className="panel analytics-panel" aria-labelledby="analytics-momentum-title">
+                <div className="panel-header">
+                  <h2 id="analytics-momentum-title">Momentum</h2>
+                  <div className="analytics-summary-label">Overall</div>
+                </div>
+                <div className="analytics-momentum-grid">
+                  <article className="analytics-momentum-card">
+                    <span>Current streak</span>
+                    <strong>{sessionStreak} days</strong>
+                  </article>
+                  <article className="analytics-momentum-card">
+                    <span>Average session</span>
+                    <strong>{formatSpentTime(averageSessionSeconds)}</strong>
+                  </article>
+                  <article className="analytics-momentum-card">
+                    <span>Longest session</span>
+                    <strong>{formatSpentTime(longestSessionSeconds)}</strong>
+                  </article>
+                  <article className="analytics-momentum-card">
+                    <span>Total tasks</span>
+                    <strong>{tasks.length}</strong>
+                  </article>
+                </div>
+              </section>
+            </div>
           </section>
         ) : (
           <section className="board board-placeholder" aria-label={`${activeView} content`} />

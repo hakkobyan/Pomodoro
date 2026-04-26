@@ -5163,6 +5163,201 @@ label,
   min-height: 1px;
 }
 
+.analytics-view {
+  display: grid;
+  gap: 1rem;
+}
+
+.analytics-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.analytics-summary-card,
+.analytics-momentum-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  border-radius: 1rem;
+  background: rgb(19 19 23 / 0.94);
+}
+
+.analytics-summary-card span,
+.analytics-summary-label,
+.analytics-momentum-card span,
+.analytics-task-copy span {
+  color: rgb(255 255 255 / 0.5);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.analytics-summary-card strong,
+.analytics-momentum-card strong,
+.analytics-task-time {
+  color: #ffffff;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.analytics-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.analytics-task-list,
+.analytics-momentum-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.analytics-task-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.02);
+}
+
+.analytics-task-rank {
+  display: grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border: 1px solid rgb(79 119 255 / 0.3);
+  border-radius: 999px;
+  background: rgb(79 119 255 / 0.12);
+  color: #9ab1ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.analytics-task-copy {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
+.analytics-task-copy strong {
+  color: #f7f8fb;
+  font-size: 0.86rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.analytics-task-time {
+  white-space: nowrap;
+}
+
+.analytics-view .analytics-panel {
+  min-height: 19rem;
+}
+
+.analytics-view .analytics-card {
+  min-height: 15rem;
+}
+
+.tasks-view {
+  display: grid;
+  gap: 1rem;
+}
+
+.tasks-view-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tasks-view-stat {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  border-radius: 1rem;
+  background: rgb(19 19 23 / 0.94);
+}
+
+.tasks-view-stat span {
+  color: rgb(255 255 255 / 0.5);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.tasks-view-stat strong,
+.tasks-class-time {
+  color: #ffffff;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.tasks-class-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tasks-class-panel {
+  min-height: 22rem;
+}
+
+.tasks-class-list {
+  display: grid;
+  gap: 0.7rem;
+  overflow: auto;
+}
+
+.tasks-class-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 4rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.02);
+}
+
+.tasks-class-row.is-completed strong {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.tasks-class-copy {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
+.tasks-class-copy strong {
+  color: #f7f8fb;
+  font-size: 0.92rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.tasks-class-copy span {
+  color: rgb(255 255 255 / 0.44);
+  font-size: 0.76rem;
+}
+
+.tasks-class-row button {
+  min-height: 2.35rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 0.8rem;
+  background: rgb(255 255 255 / 0.02);
+  color: #eef2ff;
+  cursor: pointer;
+}
+
 .session-inline-form {
   width: min(100%, 14rem);
 }
@@ -5263,6 +5458,15 @@ label,
   .sessions-grid-view {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .analytics-summary-grid,
+  .analytics-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tasks-class-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 860px) {
@@ -5285,5 +5489,23 @@ label,
 @media (max-width: 640px) {
   .sessions-grid-view {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .analytics-summary-grid,
+  .analytics-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tasks-view-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .tasks-class-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .tasks-class-time,
+  .tasks-class-row button {
+    grid-column: 2;
   }
 }
