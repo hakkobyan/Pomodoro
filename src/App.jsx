@@ -3,13 +3,18 @@ import {
   BarChart3,
   Bot,
   Check,
+  CircleDot,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Clock3,
   LayoutDashboard,
   ListTodo,
+  Plus,
   Pencil,
+  Pause,
+  Play,
+  RotateCcw,
   Settings,
   Trash2,
 } from "lucide-react";
@@ -186,6 +191,29 @@ function createAutoSessionName(existingSessions) {
 
   existingSessions.forEach((session) => {
     const match = session.name?.trim().match(/^session(\d+)$/i);
+
+    if (!match) {
+      return;
+    }
+
+    usedIndices.add(Number(match[1]));
+  });
+
+  let nextIndex = 1;
+
+  while (usedIndices.has(nextIndex)) {
+    nextIndex += 1;
+  }
+
+  return `${baseName}${nextIndex}`;
+}
+
+function createAutoTaskName(existingTasks) {
+  const baseName = "task";
+  const usedIndices = new Set();
+
+  existingTasks.forEach((task) => {
+    const match = task.text?.trim().match(/^task(\d+)$/i);
 
     if (!match) {
       return;
@@ -528,7 +556,7 @@ function GlassButton({ className = "", variant = "primary", type = "button", chi
 }
 
 export default function App() {
-  const [activeView, setActiveView] = useState("Dashboard");
+  const [activeView, setActiveView] = useState("Timer");
   const [tasks, setTasks] = useStoredList(STORAGE_KEYS.tasks);
   const [sessions, setSessions] = useStoredList(STORAGE_KEYS.sessions);
   const [taskText, setTaskText] = useState("");
@@ -599,7 +627,10 @@ export default function App() {
   const breakDuration = breakMinutes * 60;
   const timerDuration = timerMode === "rest" ? breakDuration : focusDuration;
   const timerProgress = timerDuration - timerSeconds;
-  const canRunTimer = timerMode === "rest" || Boolean(activeTask && (activeSessionId || activeTask.sessionId));
+  const canRunTimer =
+    timerMode === "rest" ||
+    !activeTask ||
+    Boolean(activeSessionId || activeTask.sessionId);
   const taskHistorySession = selectedSession?.id !== activeSessionId ? selectedSession : null;
   const taskListSession = selectedSession ?? activeSession;
   const isViewingTaskHistory = Boolean(taskHistorySession);
@@ -1183,6 +1214,10 @@ export default function App() {
     }
   }
 
+  function pauseTimer() {
+    setTimerRunning(false);
+  }
+
   function updateFocusMinutes(value) {
     const nextMinutes = value[0] ?? DEFAULT_FOCUS_MINUTES;
     const nextDuration = nextMinutes * 60;
@@ -1236,7 +1271,28 @@ export default function App() {
   }
 
   function startTaskSessionIfNeeded() {
-    if (timerMode !== "focus" || !activeTask) {
+    if (timerMode !== "focus") {
+      return true;
+    }
+
+    if (!activeTask) {
+      const nextSession =
+        activeSession ??
+        selectedSession ??
+        createSession(createAutoSessionName(sessions));
+      const shouldCreateSession = !activeSession && !selectedSession;
+      const nextTask = createItem(createAutoTaskName(tasks), nextSession.id);
+
+      if (shouldCreateSession) {
+        setSessions((currentSessions) => [...currentSessions, nextSession]);
+      }
+
+      setTasks((currentTasks) => [...currentTasks, nextTask]);
+      setActiveSessionId(nextSession.id);
+      setSelectedSessionId(nextSession.id);
+      setActiveTaskId(nextTask.id);
+      setTimerMode("focus");
+      setTimerSeconds(focusDuration);
       return true;
     }
 
@@ -1304,6 +1360,30 @@ export default function App() {
     setSelectedSessionId(session.id);
     setSessionName("");
     setEditingSessionId(session.id);
+  }
+
+  function addTaskFromTasksView() {
+    const baseSession = activeSession ?? selectedSession;
+
+    if (!baseSession) {
+      const nextSession = createSession(createAutoSessionName(sessions));
+      const nextTask = createItem(createAutoTaskName(tasks), nextSession.id);
+
+      setSessions((currentSessions) => [...currentSessions, nextSession]);
+      setTasks((currentTasks) => [...currentTasks, nextTask]);
+      setActiveSessionId(nextSession.id);
+      setSelectedSessionId(nextSession.id);
+      setActiveTaskId(nextTask.id);
+      return;
+    }
+
+    const nextTask = createItem(createAutoTaskName(tasks), baseSession.id);
+    setTasks((currentTasks) => [...currentTasks, nextTask]);
+    setSelectedSessionId(baseSession.id);
+
+    if (activeSessionId === baseSession.id) {
+      setActiveTaskId(nextTask.id);
+    }
   }
 
   function commitSessionName(sessionId) {
@@ -1468,6 +1548,105 @@ export default function App() {
           {card.content}
         </div>
       </GlassCard>
+    );
+  }
+
+  function renderTimerExperience({ compact = false } = {}) {
+    const timerStateLabel = timerMode === "rest" ? "Break" : "Focus";
+    const timerTone = timerMode === "rest" ? "#9ee8ff" : "#5A78FF";
+
+    return (
+      <section
+        className={cn("timer-experience", compact && "timer-experience-compact")}
+        aria-labelledby={compact ? "timer-title" : "timer-page-title"}
+      >
+        {compact ? (
+          <div className="panel-header">
+            <h1 id="timer-title">Timer</h1>
+          </div>
+        ) : null}
+
+        <div className="timer-hero">
+          <div className="timer-hero-ring">
+            <AnimatedCircularProgressBar
+              max={timerDuration}
+              min={0}
+              value={timerProgress}
+              gaugePrimaryColor={timerTone}
+              gaugeSecondaryColor="rgba(255,255,255,0.08)"
+              className="timer-hero-progress"
+            />
+            <div className="timer-hero-inner">
+              <div className="timer-hero-display">{formatTimer(timerSeconds)}</div>
+              <div className={cn("timer-mode-pill", timerMode === "rest" && "is-rest")}>
+                <CircleDot aria-hidden="true" size={14} strokeWidth={2.4} />
+                <span>{timerStateLabel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="timer-task-picker-block">
+          {timerMode === "rest" ? (
+            <div className="timer-task-picker timer-task-picker-readonly">
+              <CircleDot aria-hidden="true" size={18} strokeWidth={2.2} />
+              <span>Break time</span>
+            </div>
+          ) : (
+            <GlassSelect
+              value={activeTaskId ?? ""}
+              onValueChange={selectTask}
+              disabled={focusableTasks.length === 0}
+            >
+              <GlassSelectTrigger
+                id={compact ? "timer-task-compact" : "timer-task-full"}
+                className={cn(
+                  "timer-task-picker",
+                  compact && "timer-task-picker-compact",
+                )}
+                aria-label="Choose task"
+              >
+                <div className="timer-task-picker-value">
+                  <ListTodo aria-hidden="true" size={18} strokeWidth={2.1} />
+                  <GlassSelectValue placeholder={focusableTasks.length > 0 ? "Choose a task" : "Create a task to begin"} />
+                </div>
+              </GlassSelectTrigger>
+              <GlassSelectContent className="timer-task-picker-menu">
+                {focusableTasks.map((task) => (
+                  <GlassSelectItem key={task.id} value={task.id} className="timer-task-picker-item">
+                    {task.text}
+                  </GlassSelectItem>
+                ))}
+              </GlassSelectContent>
+            </GlassSelect>
+          )}
+        </div>
+
+        <div className="timer-command-row" aria-label="Timer controls">
+          <button type="button" className="timer-command-button" onClick={resetTimer} aria-label="Reset timer">
+            <RotateCcw aria-hidden="true" size={24} strokeWidth={2.2} />
+          </button>
+          <button
+            type="button"
+            className="timer-command-button timer-command-button-primary"
+            onClick={handleTimerButtonClick}
+            disabled={!timerRunning && (!canRunTimer || timerSeconds === 0)}
+            aria-label="Start timer"
+          >
+            <Play aria-hidden="true" size={28} strokeWidth={2.2} fill="currentColor" />
+          </button>
+          <button
+            type="button"
+            className="timer-command-button timer-command-button-stop"
+            onClick={pauseTimer}
+            disabled={!timerRunning}
+            aria-label="Pause timer"
+          >
+            <Pause aria-hidden="true" size={24} strokeWidth={2.4} />
+          </button>
+        </div>
+
+      </section>
     );
   }
 
@@ -1753,11 +1932,12 @@ export default function App() {
     .filter(Boolean);
   const boardRows = chunkItems(orderedCards, 2);
   const sidebarItems = [
-    { label: "Dashboard", icon: LayoutDashboard },
+    { label: "Timer", icon: Clock3 },
     { label: "Sessions", icon: Clock3 },
     { label: "Tasks", icon: ListTodo },
     { label: "Analytics", icon: BarChart3 },
-    { label: "AI GENERATOR", icon: Bot },
+    { label: "AI Generator", icon: Bot },
+    { label: "Dashboard", icon: LayoutDashboard },
   ];
 
   return (
@@ -1793,27 +1973,77 @@ export default function App() {
             );
           })}
         </nav>
-        <div className="dashboard-streak-card">
+        <div className="dashboard-streak-card dashboard-section-card">
           <div className="dashboard-streak-label">
             <span className="dashboard-streak-dot" aria-hidden="true" />
-            Current streak
+            Current session
           </div>
-          <strong>{sessionStreak} days</strong>
-          <div className="dashboard-streak-days" aria-hidden="true">
-            {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
-              <span key={`${day}-${index}`} className={index < Math.min(sessionStreak, 7) ? "is-filled" : ""}>
-                {day}
-              </span>
-            ))}
+          <strong>{summarySession?.name || (summarySession ? formatSessionDate(summarySession.startedAt) : "No session")}</strong>
+          <div className="dashboard-section-copy">
+            {summarySession
+              ? `${formatSpentTime(summarySession.durationSeconds ?? 0)} tracked`
+              : "Start or continue a session to track focus time"}
           </div>
         </div>
       </aside>
       <div className="dashboard-main">
-        <header className="dashboard-header">
+        <header className={cn("dashboard-header", activeView === "Timer" && "dashboard-header-timer")}>
           <div className="dashboard-header-copy">
             <h1>{activeView}</h1>
           </div>
           <div className="dashboard-header-actions">
+            {activeView === "Sessions" ? (
+              <>
+                <button
+                  className="session-action"
+                  type="button"
+                  onClick={startNewSession}
+                  disabled={layoutEditMode}
+                  aria-label="Add session"
+                >
+                  <Plus aria-hidden="true" size={16} strokeWidth={2.6} />
+                </button>
+                <button
+                  className="session-action"
+                  type="button"
+                  onClick={() => {
+                    if (summarySession) {
+                      removeSession(summarySession.id);
+                    }
+                  }}
+                  disabled={!summarySession || layoutEditMode}
+                  aria-label="Delete session"
+                >
+                  <Trash2 aria-hidden="true" size={16} strokeWidth={2.4} />
+                </button>
+              </>
+            ) : null}
+            {activeView === "Tasks" ? (
+              <>
+                <button
+                  className="session-action"
+                  type="button"
+                  onClick={addTaskFromTasksView}
+                  disabled={layoutEditMode}
+                  aria-label="Add task"
+                >
+                  <Plus aria-hidden="true" size={16} strokeWidth={2.6} />
+                </button>
+                <button
+                  className="session-action"
+                  type="button"
+                  onClick={() => {
+                    if (activeTaskId) {
+                      removeTask(activeTaskId);
+                    }
+                  }}
+                  disabled={!activeTaskId || layoutEditMode}
+                  aria-label="Delete task"
+                >
+                  <Trash2 aria-hidden="true" size={16} strokeWidth={2.4} />
+                </button>
+              </>
+            ) : null}
             <button
               className="settings-button"
               type="button"
@@ -1894,7 +2124,11 @@ export default function App() {
           </div>
         </div>
       ) : null}
-        {activeView === "Dashboard" ? (
+        {activeView === "Timer" ? (
+          <section className="timer-view" aria-label="Timer workspace">
+            {renderTimerExperience()}
+          </section>
+        ) : activeView === "Dashboard" ? (
           <section className={cn("board", layoutEditMode && "is-layout-editing")} aria-label="Pomodoro board frame">
             {layoutEditMode ? (
               <div className="layout-save-overlay">

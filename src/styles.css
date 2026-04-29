@@ -4485,6 +4485,9 @@ label,
   border-right: 1px solid rgb(255 255 255 / 0.06);
   background: rgb(12 12 14 / 0.58);
   backdrop-filter: blur(6px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .dashboard-brand {
@@ -4592,6 +4595,12 @@ label,
   font-weight: 700;
 }
 
+.dashboard-section-copy {
+  color: rgb(255 255 255 / 0.5);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
 .dashboard-streak-days {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -4624,7 +4633,362 @@ label,
   min-height: 100dvh;
   flex-direction: column;
   gap: 1rem;
-  padding: 0.95rem 1.1rem 1.1rem;
+  padding: 1.25rem 1.1rem 1.1rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.dashboard-main > section {
+  min-height: 0;
+}
+
+.timer-view {
+  display: block;
+  min-height: 0;
+  padding: 0.15rem 0 0.9rem;
+}
+
+.timer-experience {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 1rem;
+  width: min(100%, 34rem);
+  margin: 0 auto;
+}
+
+.timer-page-top {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  text-align: center;
+}
+
+.timer-page-heading {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.timer-page-kicker {
+  color: rgb(255 255 255 / 0.48);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.timer-page-heading h2 {
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+.timer-page-meta {
+  color: rgb(255 255 255 / 0.58);
+  font-size: 0.9rem;
+}
+
+.timer-task-picker-block {
+  display: grid;
+  gap: 0.55rem;
+  width: min(100%, 16rem);
+}
+
+.timer-task-picker-label {
+  color: rgb(255 255 255 / 0.8);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.timer-task-picker,
+.timer-task-picker-readonly {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  min-height: 4rem !important;
+  width: 100%;
+  padding: 0 1rem !important;
+  border: 1px solid rgb(162 174 255 / 0.18) !important;
+  border-radius: 1.15rem !important;
+  background: linear-gradient(180deg, rgb(23 24 34 / 0.92), rgb(15 16 24 / 0.95)) !important;
+  box-shadow:
+    0 20px 60px rgb(0 0 0 / 0.24),
+    inset 0 1px 0 rgb(255 255 255 / 0.05);
+  color: #ffffff !important;
+}
+
+.timer-task-picker[data-placeholder] {
+  color: rgb(255 255 255 / 0.44) !important;
+}
+
+.timer-task-picker-value,
+.timer-task-picker-readonly {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.timer-task-picker-value svg,
+.timer-task-picker-readonly svg {
+  color: #8a8cff;
+}
+
+.timer-task-picker-menu {
+  max-height: 16rem;
+  border-radius: 1rem !important;
+}
+
+.timer-task-picker-item {
+  min-height: 2.6rem;
+  padding-left: 2.3rem !important;
+}
+
+.timer-task-picker-compact,
+.timer-experience-compact .timer-task-picker,
+.timer-experience-compact .timer-task-picker-readonly {
+  min-height: 3.2rem !important;
+  padding: 0 0.9rem !important;
+  border-radius: 0.9rem !important;
+}
+
+.timer-hero {
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.timer-hero-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 23rem);
+  aspect-ratio: 1;
+}
+
+.timer-hero-ring::before {
+  content: "";
+  position: absolute;
+  inset: 11%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, rgb(9 11 20 / 0.12), rgb(7 8 16 / 0.5) 58%, rgb(6 7 14 / 0.82) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.04),
+    0 0 70px rgb(66 88 255 / 0.08);
+}
+
+.timer-hero-progress {
+  width: 100% !important;
+  height: 100% !important;
+  filter: drop-shadow(0 0 26px rgb(122 127 255 / 0.16));
+}
+
+.timer-hero-progress [data-current-value] {
+  display: none;
+}
+
+.timer-hero-inner {
+  position: absolute;
+  inset: 19%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  z-index: 2;
+}
+
+.timer-hero-display {
+  color: #ffffff;
+  font-size: clamp(3.2rem, 8vw, 5.4rem);
+  font-weight: 600;
+  letter-spacing: -0.08em;
+  line-height: 0.94;
+  text-shadow: 0 10px 40px rgb(0 0 0 / 0.28);
+}
+
+.timer-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.5rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgb(133 141 255 / 0.24);
+  border-radius: 999px;
+  background: rgb(15 17 28 / 0.72);
+  color: #8e92ff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+
+.timer-mode-pill.is-rest {
+  border-color: rgb(120 227 255 / 0.24);
+  color: #9ee8ff;
+}
+
+.timer-command-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  width: min(100%, 23rem);
+  justify-content: center;
+  justify-items: center;
+  margin: 0 auto;
+}
+
+.timer-command-button {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  gap: 0.55rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  min-width: 3.5rem;
+  min-height: 3.5rem;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+  background: #1d1f26;
+  color: #e7e9f5;
+  text-align: center;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.timer-command-button svg {
+  transform: translateY(2px);
+}
+
+.timer-command-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgb(255 255 255 / 0.18);
+}
+
+.timer-command-button:disabled {
+  opacity: 0.45;
+}
+
+.timer-command-button-primary {
+  background: #5a78ff;
+  color: #ffffff;
+}
+
+.timer-command-button-stop {
+  color: #ff9ba8;
+}
+
+.timer-command-copy {
+  display: none;
+}
+
+.timer-command-copy strong {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.timer-command-copy small {
+  color: rgb(255 255 255 / 0.62);
+  font-size: 0.72rem;
+}
+
+.timer-command-button-primary .timer-command-copy small {
+  color: rgb(255 255 255 / 0.86);
+}
+
+.timer-empty-hint {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  width: min(100%, 30rem);
+  padding: 1.2rem 1.3rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 1.2rem;
+  background: rgb(255 255 255 / 0.03);
+  color: rgb(255 255 255 / 0.68);
+  text-align: center;
+}
+
+.timer-empty-hint strong {
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.timer-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.timer-experience-compact {
+  gap: 1rem;
+  width: 100%;
+}
+
+.timer-experience-compact .timer-page-top {
+  display: none;
+}
+
+.timer-experience-compact .timer-task-picker-block {
+  width: min(100%, 14rem);
+  gap: 0.45rem;
+}
+
+.timer-experience-compact .timer-task-picker-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.timer-experience-compact .timer-hero-ring {
+  width: min(100%, 12rem);
+}
+
+.timer-experience-compact .timer-hero-inner {
+  inset: 18%;
+  gap: 0.6rem;
+}
+
+.timer-experience-compact .timer-hero-display {
+  font-size: clamp(2.2rem, 5vw, 3.25rem);
+}
+
+.timer-experience-compact .timer-mode-pill {
+  min-height: 2rem;
+  padding: 0 0.7rem;
+  font-size: 0.82rem;
+}
+
+.timer-experience-compact .timer-command-row {
+  width: min(100%, 15rem);
+  gap: 0.6rem;
+}
+
+.timer-experience-compact .timer-command-button {
+  min-height: 5.2rem;
+  gap: 0.45rem;
+  padding: 0.7rem 0.45rem;
+}
+
+.timer-experience-compact .timer-command-icon {
+  width: 2.7rem;
+  height: 2.7rem;
+}
+
+.timer-experience-compact .timer-command-copy strong {
+  font-size: 0.82rem;
+}
+
+.timer-experience-compact .timer-command-copy small {
+  display: none;
 }
 
 .dashboard-header {
@@ -4634,12 +4998,17 @@ label,
   gap: 1rem;
 }
 
+.dashboard-header-timer {
+  padding-top: 0;
+}
+
 .dashboard-header-copy {
   display: grid;
   gap: 0.28rem;
 }
 
 .dashboard-header-copy h1 {
+  margin: 0;
   color: #ffffff;
   font-size: clamp(2rem, 4vw, 2.35rem);
   font-weight: 700;
@@ -4697,6 +5066,7 @@ label,
   width: 2.7rem;
   justify-content: center;
   padding: 0;
+  margin-top: 0.08rem;
 }
 
 .dashboard-header .settings-button svg {
@@ -4709,6 +5079,7 @@ label,
   min-height: 0;
   flex-direction: column;
   gap: 1rem;
+  padding-bottom: 0.15rem;
 }
 
 .board-row {
@@ -4926,6 +5297,9 @@ label,
   width: min(100%, 9.75rem);
   position: relative;
   isolation: isolate;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
 }
 
 .timer-progress::before {
@@ -4933,30 +5307,41 @@ label,
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  background:
-    repeating-conic-gradient(
-      from -90deg,
-      rgb(255 255 255 / 0.14) 0deg 2deg,
-      transparent 2deg 7deg
-    );
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 0.3rem), #000 calc(100% - 0.3rem));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 0.3rem), #000 calc(100% - 0.3rem));
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 9deg,
+    rgb(31 31 36 / 0.94) 9deg 351deg,
+    transparent 351deg 360deg
+  );
   z-index: 0;
+}
+
+.timer-progress::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, rgb(9 11 20 / 0.18), rgb(7 8 16 / 0.55) 58%, rgb(6 7 14 / 0.82) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.04),
+    0 0 24px rgb(66 88 255 / 0.08);
+  z-index: 1;
 }
 
 .timer-progress-ring {
   width: 100% !important;
   height: 100% !important;
-  filter: none;
-  z-index: 1;
+  filter: drop-shadow(0 0 12px rgb(122 127 255 / 0.12));
+  z-index: 2;
 }
 
 .timer-display {
   color: #ffffff !important;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif !important;
-  font-size: clamp(1.75rem, 3.2vw, 2.7rem) !important;
+  font-size: clamp(1.45rem, 2.6vw, 2.2rem) !important;
   font-weight: 700 !important;
-  z-index: 2;
+  z-index: 3;
 }
 
 .timer-status {
@@ -4971,7 +5356,7 @@ label,
   letter-spacing: 0.08em;
   line-height: 1;
   white-space: nowrap;
-  z-index: 2;
+  z-index: 3;
 }
 
 .timer-task {
@@ -5166,6 +5551,8 @@ label,
 .analytics-view {
   display: grid;
   gap: 1rem;
+  min-height: 0;
+  padding-bottom: 0.15rem;
 }
 
 .analytics-summary-grid {
@@ -5266,6 +5653,8 @@ label,
 .ai-generator-view {
   display: grid;
   gap: 1rem;
+  min-height: 0;
+  padding-bottom: 0.15rem;
 }
 
 .ai-generator-summary {
@@ -5397,6 +5786,8 @@ label,
 .tasks-view {
   display: grid;
   gap: 1rem;
+  min-height: 0;
+  padding-bottom: 0.15rem;
 }
 
 .tasks-view-summary {
@@ -5569,6 +5960,121 @@ label,
   background: #4f77ff !important;
 }
 
+/* Solid surfaces: remove glassmorphism across the app */
+.dashboard-sidebar,
+.dashboard-streak-card,
+.dashboard-nav-item,
+.dashboard-period-button,
+.dashboard-header .settings-button,
+.analytics-period-button,
+.settings-overlay,
+.settings-popup,
+.glass-card-shell,
+.glass-card-shell > .relative.z-10 > .panel,
+.glass-card-shell > .relative.z-10 > .board-card-frame > .panel,
+.panel,
+.sessions-grid-card,
+.analytics-summary-card,
+.analytics-momentum-card,
+.tasks-view-stat,
+.tasks-class-panel,
+.ai-generator-stat,
+.ai-generator-panel,
+.timer-task-picker,
+.timer-task-picker-readonly,
+.timer-command-button,
+.timer-empty-hint,
+.session-empty-state,
+.task-filter-pill.is-active,
+.analytics-card-link,
+.analytics-card-link:hover,
+.analytics-card-link:focus-visible,
+.settings-overlay .settings-popup button,
+.settings-overlay .settings-popup .settings-action-button,
+.settings-overlay .settings-popup .glass-input-control,
+.settings-overlay .settings-popup .glass-input-control-session,
+.glass-button,
+.glass-input-control,
+.glass-input-control-session,
+.item-list li,
+.tasks-class-row,
+.ai-suggestion-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.dashboard-sidebar {
+  background: #0f1014 !important;
+}
+
+.dashboard-streak-card,
+.dashboard-nav-item,
+.dashboard-period-button,
+.dashboard-header .settings-button,
+.analytics-period-button,
+.settings-popup,
+.glass-card-shell,
+.glass-card-shell > .relative.z-10 > .panel,
+.glass-card-shell > .relative.z-10 > .board-card-frame > .panel,
+.panel,
+.sessions-grid-card,
+.analytics-summary-card,
+.analytics-momentum-card,
+.tasks-view-stat,
+.tasks-class-panel,
+.ai-generator-stat,
+.ai-generator-panel,
+.timer-task-picker,
+.timer-task-picker-readonly,
+.timer-command-button,
+.timer-empty-hint,
+.session-empty-state,
+.item-list li,
+.tasks-class-row,
+.ai-suggestion-card {
+  background-image: none !important;
+  background-color: #17181d !important;
+}
+
+.dashboard-nav-item:hover,
+.analytics-card-link:hover,
+.analytics-card-link:focus-visible,
+.ai-suggestion-card:hover {
+  background-image: none !important;
+}
+
+.dashboard-nav-item.is-active,
+.dashboard-nav-item.is-active:hover,
+.glass-button-primary,
+.timer-command-button-primary {
+  background: #5a78ff !important;
+}
+
+.glass-button-secondary,
+.glass-button-ghost,
+.task-filter-pill.is-active,
+.dashboard-period-button,
+.dashboard-header .settings-button,
+.analytics-period-button {
+  background: #1d1f26 !important;
+}
+
+.glass-input-control,
+.glass-input-control-session,
+.settings-overlay .settings-popup .glass-input-control,
+.settings-overlay .settings-popup .glass-input-control-session,
+.timer-task-picker,
+.timer-task-picker-readonly {
+  background: #17181d !important;
+  border-color: rgb(255 255 255 / 0.12) !important;
+}
+
+.timer-command-icon,
+.timer-command-button-primary .timer-command-icon {
+  background: #22242c !important;
+}
+
 @media (max-width: 1080px) {
   .app-shell.dashboard-shell {
     grid-template-columns: 1fr;
@@ -5582,6 +6088,16 @@ label,
 
   .dashboard-streak-card {
     margin-top: 0;
+  }
+
+  .timer-view {
+    min-height: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .timer-command-row {
+    width: min(100%, 28rem);
+    gap: 0.9rem;
   }
 }
 
@@ -5615,6 +6131,24 @@ label,
     flex-direction: column;
     align-items: stretch;
   }
+
+  .timer-experience {
+    gap: 1.2rem;
+  }
+
+  .timer-task-picker-block,
+  .timer-command-row {
+    width: 100%;
+  }
+
+  .timer-hero-ring {
+    width: min(100%, 25rem);
+  }
+
+  .timer-command-button {
+    min-height: 8rem;
+    border-radius: 1.7rem;
+  }
 }
 
 @media (max-width: 640px) {
@@ -5640,5 +6174,53 @@ label,
   .tasks-class-time,
   .tasks-class-row button {
     grid-column: 2;
+  }
+
+  .timer-command-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .timer-hero-display {
+    font-size: clamp(3.3rem, 15vw, 5.5rem);
+  }
+
+  .timer-page-heading h2 {
+    font-size: 2rem;
+  }
+
+  .timer-task-picker,
+  .timer-task-picker-readonly {
+    min-height: 4.3rem !important;
+    padding: 0 1rem !important;
+  }
+
+  .timer-hero-ring {
+    width: min(100%, 20rem);
+  }
+
+  .timer-hero-inner {
+    inset: 18%;
+  }
+
+  .timer-command-row {
+    gap: 0.7rem;
+  }
+
+  .timer-command-button {
+    min-height: 7rem;
+    padding: 0.8rem 0.4rem;
+  }
+
+  .timer-command-icon {
+    width: 3.4rem;
+    height: 3.4rem;
+  }
+
+  .timer-command-copy strong {
+    font-size: 0.95rem;
+  }
+
+  .timer-command-copy small {
+    font-size: 0.74rem;
   }
 }
