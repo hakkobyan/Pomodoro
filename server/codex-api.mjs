@@ -9,6 +9,33 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = 8787;
 const SCHEMA_PATH = join(__dirname, "ai-plan.schema.json");
 
+function getCodexLaunchConfig(outputPath) {
+  const codexArgs = [
+    "exec",
+    "--skip-git-repo-check",
+    "--color",
+    "never",
+    "--output-schema",
+    SCHEMA_PATH,
+    "-o",
+    outputPath,
+  ];
+
+  if (process.platform === "win32") {
+    return {
+      command: "cmd.exe",
+      args: ["/d", "/s", "/c", "codex.cmd", ...codexArgs],
+      shell: false,
+    };
+  }
+
+  return {
+    command: "codex",
+    args: codexArgs,
+    shell: false,
+  };
+}
+
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
@@ -50,23 +77,15 @@ async function runCodexPlan(prompt) {
   ].join("\n");
 
   try {
+    const launchConfig = getCodexLaunchConfig(outputPath);
     const result = await new Promise((resolve, reject) => {
       const child = spawn(
-        "codex",
-        [
-          "exec",
-          "--skip-git-repo-check",
-          "--color",
-          "never",
-          "--output-schema",
-          SCHEMA_PATH,
-          "-o",
-          outputPath,
-          instruction,
-        ],
+        launchConfig.command,
+        launchConfig.args,
         {
           cwd: dirname(__dirname),
-          stdio: ["ignore", "pipe", "pipe"],
+          stdio: ["pipe", "pipe", "pipe"],
+          shell: launchConfig.shell,
           windowsHide: true,
         },
       );
@@ -81,6 +100,9 @@ async function runCodexPlan(prompt) {
       child.stderr.on("data", (chunk) => {
         stderr += chunk.toString();
       });
+
+      child.stdin.write(instruction);
+      child.stdin.end();
 
       child.on("error", reject);
       child.on("close", (code) => {

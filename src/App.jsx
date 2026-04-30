@@ -49,6 +49,31 @@ function cn(...values) {
   return values.filter(Boolean).join(" ");
 }
 
+function getAiApiCandidates() {
+  if (typeof window === "undefined") {
+    return ["/api/generate-plan"];
+  }
+
+  const sameOriginUrl = `${window.location.origin}/api/generate-plan`;
+  return Array.from(new Set([sameOriginUrl, "http://127.0.0.1:8787/api/generate-plan"]));
+}
+
+async function parseApiResponse(response) {
+  const rawText = await response.text();
+  const contentType = response.headers.get("content-type") ?? "";
+  const looksLikeJson = contentType.includes("application/json");
+
+  if (looksLikeJson) {
+    try {
+      return rawText ? JSON.parse(rawText) : {};
+    } catch {
+      throw new Error("The AI service returned invalid JSON.");
+    }
+  }
+
+  return { rawText };
+}
+
 function formatDashboardDate(date = new Date()) {
   return new Intl.DateTimeFormat("en-US", {
     weekday: "long",
@@ -1221,17 +1246,41 @@ export default function App() {
     setAiResult("Generating session and tasks with Codex...");
 
     try {
-      const response = await fetch("/api/generate-plan", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
-      const responseData = await response.json();
+      let responseData = null;
+      let lastError = null;
 
-      if (!response.ok) {
-        throw new Error(responseData?.error || "Codex request failed.");
+      for (const apiUrl of getAiApiCandidates()) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ prompt }),
+          });
+          responseData = await parseApiResponse(response);
+
+          if (!response.ok) {
+            const apiError =
+              responseData?.error ||
+              responseData?.rawText ||
+              "Codex request failed.";
+            throw new Error(apiError);
+          }
+
+          if (!responseData?.plan) {
+            throw new Error("The AI service did not return a valid plan.");
+          }
+
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (lastError || !responseData?.plan) {
+        throw lastError ?? new Error("Failed to reach the AI service.");
       }
 
       const parsedPlan = normalizeAiPlan(responseData?.plan);
@@ -2642,41 +2691,10 @@ export default function App() {
                       Clear
                     </GlassButton>
                   </div>
-                  <div className="ai-generator-hint">
-                    Uses your local Codex CLI session to generate a focused plan for this goal.
-                  </div>
                   {aiError ? <div className="ai-generator-error">{aiError}</div> : null}
                 </div>
                 <div className="ai-generator-output" aria-live="polite">
                   {aiResult || "Your generated session and task list will appear here."}
-                </div>
-              </section>
-              <section className="panel ai-generator-panel" aria-labelledby="ai-suggestions-title">
-                <div className="panel-header">
-                  <h2 id="ai-suggestions-title">Quick Ideas</h2>
-                  <div className="analytics-summary-label">Suggested prompts</div>
-                </div>
-                <div className="ai-generator-suggestions">
-                  {[
-                    "Create Landing website",
-                    "Build onboarding flow for mobile app",
-                    "Prepare pitch deck for investors",
-                  ].map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      type="button"
-                      className="ai-suggestion-card"
-                      disabled={aiLoading}
-                      onClick={() => {
-                        setAiPrompt(suggestion);
-                        setAiResult("");
-                        setAiError("");
-                      }}
-                    >
-                      <strong>{suggestion}</strong>
-                      <span>Use this goal to generate a focused session</span>
-                    </button>
-                  ))}
                 </div>
               </section>
             </div>
