@@ -90,6 +90,28 @@ GOOGLE_API_KEY=your-google-cloud-api-key
 # GOOGLE_AI_MODEL=gemini-2.5-flash
 ```
 
+For deployments, the frontend can also point to a hosted backend with:
+
+```env
+VITE_API_BASE_URL=https://your-backend-domain.com
+```
+
+If `VITE_API_BASE_URL` is not set, the app uses same-origin `/api/generate-plan`.
+
+### Vercel deployment
+
+For Vercel, deploy the project root and set these Project Environment Variables:
+
+```env
+GOOGLE_API_KEY=your-google-cloud-api-key
+GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+GOOGLE_CLOUD_LOCATION=us-central1
+# optional
+GOOGLE_AI_MODEL=gemini-2.5-flash
+```
+
+The repository includes Vercel Functions at `/api/generate-plan` and `/api/health`, so `VITE_API_BASE_URL` is usually not needed on Vercel.
+
 ### How it works
 
 The website calls a local API server at `/api/generate-plan`.

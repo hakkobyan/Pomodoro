@@ -53,8 +53,13 @@ function getAiApiCandidates() {
     return ["/api/generate-plan"];
   }
 
+  const configuredBaseUrl = String(import.meta.env.VITE_API_BASE_URL ?? "").trim().replace(/\/$/, "");
   const sameOriginUrl = `${window.location.origin}/api/generate-plan`;
-  return Array.from(new Set([sameOriginUrl, "http://127.0.0.1:8787/api/generate-plan"]));
+  const configuredUrl = configuredBaseUrl ? `${configuredBaseUrl}/api/generate-plan` : null;
+  const isLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
+  const localFallbackUrl = isLocalHost ? "http://127.0.0.1:8787/api/generate-plan" : null;
+
+  return Array.from(new Set([sameOriginUrl, configuredUrl, localFallbackUrl].filter(Boolean)));
 }
 
 async function parseApiResponse(response) {
