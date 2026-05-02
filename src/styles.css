@@ -4695,27 +4695,30 @@ label,
 }
 
 .timer-view {
-  display: block;
-  min-height: 0;
+  display: flex;
+  min-height: 100%;
+  align-items: center;
   padding: 0.15rem 0 0.9rem;
 }
 
 .timer-experience {
   display: grid;
   justify-items: stretch;
-  align-content: start;
+  align-content: center;
   gap: 0.35rem;
   width: min(100%, 92rem);
+  min-height: 100%;
   margin: 0 auto;
 }
 
 .timer-layout {
   display: grid;
   grid-template-columns: minmax(26rem, 1fr) minmax(28rem, 36rem);
-  align-items: start;
+  align-items: center;
   justify-content: space-between;
   gap: 4rem;
   width: 100%;
+  min-height: 100%;
 }
 
 .timer-info-pane {
@@ -4854,9 +4857,10 @@ label,
 .timer-hero {
   display: grid;
   place-items: center;
-  align-content: start;
+  align-content: center;
   gap: 0.8rem;
   width: 100%;
+  min-height: 100%;
 }
 
 .timer-dial-shell {
@@ -5048,7 +5052,7 @@ label,
 
 .timer-experience-compact .timer-hero {
   gap: 0.75rem;
-  transform: translateY(-2.2rem);
+  transform: none;
 }
 
 .timer-experience-compact .timer-dial {
@@ -5868,6 +5872,7 @@ label,
 
   .timer-info-pane {
     max-width: 42rem;
+    transform: none;
   }
 
   .timer-dial {
@@ -5911,6 +5916,7 @@ label,
   .timer-overall-block {
     gap: 1rem;
     margin-top: 0.1rem;
+    transform: none;
   }
 
   .timer-overall-story {
@@ -7331,6 +7337,161 @@ label,
   }
 }
 
+@media (max-height: 1000px) and (max-width: 1080px) {
+  .dashboard-main.is-introduction-view {
+    gap: clamp(0.75rem, 1.1vh, 0.95rem);
+    padding-top: clamp(0.82rem, 1.25vh, 1.05rem);
+    padding-bottom: clamp(0.82rem, 1.25vh, 1.05rem);
+  }
+
+  .intro-view {
+    gap: clamp(0.75rem, 1.1vh, 0.95rem);
+  }
+
+  .intro-shell {
+    gap: clamp(0.68rem, 1vh, 0.88rem);
+  }
+
+  .intro-topline {
+    font-size: clamp(0.72rem, 0.9vh, 0.84rem);
+  }
+
+  .intro-grid {
+    gap: clamp(0.72rem, 1.05vh, 0.92rem);
+  }
+
+  .intro-hero-panel,
+  .intro-steps-panel {
+    padding: clamp(0.95rem, 1.55vh, 1.2rem);
+  }
+
+  .intro-hero-panel {
+    gap: clamp(0.95rem, 1.4vh, 1.2rem);
+  }
+
+  .intro-copy {
+    gap: clamp(0.75rem, 1.1vh, 1rem);
+  }
+
+  .intro-copy h2 {
+    font-size: clamp(2.75rem, 5vh, 3.95rem);
+  }
+
+  .intro-copy p {
+    font-size: clamp(1.02rem, 1.95vh, 1.2rem);
+    line-height: 1.48;
+  }
+
+  .intro-action-row {
+    gap: clamp(0.55rem, 0.95vh, 0.72rem);
+    margin-top: clamp(0.35rem, 0.65vh, 0.55rem);
+  }
+
+  .intro-primary-action,
+  .intro-secondary-action,
+  .intro-step-action {
+    min-height: clamp(2.75rem, 4.9vh, 3.15rem);
+    padding: clamp(0.68rem, 1.12vh, 0.9rem) clamp(1rem, 1.8vw, 1.28rem);
+    font-size: clamp(0.94rem, 1.65vh, 1.04rem);
+  }
+
+  .intro-focus-area {
+    gap: clamp(0.85rem, 1.35vh, 1.1rem);
+    padding-top: clamp(0.2rem, 0.4vh, 0.5rem);
+  }
+
+  .intro-timer-dial {
+    width: min(100%, clamp(18rem, 31vh, 22.5rem));
+  }
+
+  .intro-timer-readout strong {
+    font-size: clamp(3rem, 6.2vh, 4.4rem);
+  }
+
+  .intro-timer-mode {
+    padding: clamp(0.45rem, 0.82vh, 0.56rem) clamp(0.72rem, 1.1vw, 0.92rem);
+    font-size: clamp(0.82rem, 1.35vh, 0.92rem);
+  }
+
+  .intro-timer-controls {
+    gap: clamp(0.72rem, 1.1vh, 0.92rem);
+  }
+
+  .intro-icon-button {
+    width: clamp(3.75rem, 6.6vh, 4.3rem);
+    height: clamp(3.75rem, 6.6vh, 4.3rem);
+  }
+
+  .intro-steps-panel {
+    gap: clamp(0.72rem, 1.1vh, 0.92rem);
+  }
+
+  .intro-steps-header h2 {
+    font-size: clamp(1.45rem, 2.75vh, 1.75rem);
+  }
+
+  .intro-steps-header p {
+    margin-top: clamp(0.25rem, 0.45vh, 0.45rem);
+    font-size: clamp(0.9rem, 1.4vh, 1rem);
+  }
+
+  .intro-step-list {
+    gap: clamp(0.58rem, 0.9vh, 0.75rem);
+  }
+
+  .intro-step-card {
+    gap: clamp(0.65rem, 0.95vh, 0.85rem);
+    padding: clamp(0.78rem, 1.12vh, 0.98rem);
+  }
+
+  .intro-step-number {
+    width: clamp(1.85rem, 3vh, 2.1rem);
+    height: clamp(1.85rem, 3vh, 2.1rem);
+    font-size: clamp(0.9rem, 1.4vh, 1rem);
+  }
+
+  .intro-step-copy {
+    gap: clamp(0.22rem, 0.4vh, 0.4rem);
+  }
+
+  .intro-step-copy strong {
+    font-size: clamp(1rem, 1.65vh, 1.1rem);
+  }
+
+  .intro-step-copy p,
+  .intro-steps-footer {
+    font-size: clamp(0.82rem, 1.28vh, 0.94rem);
+    line-height: 1.36;
+  }
+
+  .intro-stats-panel {
+    padding: clamp(0.12rem, 0.25vh, 0.2rem);
+  }
+
+  .intro-stat-card {
+    gap: clamp(0.42rem, 0.65vh, 0.58rem);
+    padding: clamp(0.65rem, 0.98vh, 0.82rem) clamp(0.75rem, 1.15vw, 0.95rem);
+  }
+
+  .intro-stat-label {
+    gap: clamp(0.3rem, 0.5vh, 0.45rem);
+    font-size: clamp(0.76rem, 1.2vh, 0.86rem);
+  }
+
+  .intro-stat-card strong {
+    font-size: clamp(1.7rem, 3.2vh, 2.35rem);
+  }
+
+  .intro-stat-card strong span {
+    font-size: clamp(0.72rem, 1.05vh, 0.82rem);
+  }
+
+  .intro-stat-card p {
+    font-size: clamp(0.78rem, 1.12vh, 0.88rem);
+    line-height: 1.3;
+  }
+}
+
 @media (max-height: 1080px) and (min-width: 1081px) {
   html,
   body,
@@ -7378,155 +7539,155 @@ label,
   }
 }
 
-@media (max-height: 800px) and (min-width: 1081px) {
+@media (max-height: 900px) and (min-width: 1081px) {
   .dashboard-main.is-introduction-view {
-    gap: 0.75rem;
-    padding-top: 0.9rem;
-    padding-bottom: 0.85rem;
+    gap: clamp(0.72rem, 1vh, 0.92rem);
+    padding-top: clamp(0.82rem, 1.15vh, 1rem);
+    padding-bottom: clamp(0.78rem, 1.08vh, 0.95rem);
   }
 
   .intro-view {
-    gap: 0.75rem;
+    gap: clamp(0.72rem, 1vh, 0.92rem);
   }
 
   .intro-shell {
-    gap: 0.65rem;
+    gap: clamp(0.62rem, 0.9vh, 0.8rem);
   }
 
   .intro-topline {
-    font-size: 0.78rem;
+    font-size: clamp(0.72rem, 0.85vh, 0.8rem);
   }
 
   .intro-grid {
-    gap: 0.65rem;
+    gap: clamp(0.68rem, 1vh, 0.82rem);
   }
 
   .intro-hero-panel {
-    gap: 1rem;
-    padding: 0.95rem 1rem;
+    gap: clamp(0.95rem, 1.2vh, 1.1rem);
+    padding: clamp(0.95rem, 1.35vh, 1.12rem);
   }
 
   .intro-copy {
-    gap: 0.75rem;
-    max-width: 22rem;
+    gap: clamp(0.68rem, 1vh, 0.85rem);
+    max-width: min(100%, 23rem);
   }
 
   .intro-copy h2 {
-    font-size: clamp(2.15rem, 3.2vw, 3.2rem);
+    font-size: clamp(2.35rem, 4.8vh, 3.5rem);
   }
 
   .intro-copy p {
-    font-size: 0.98rem;
-    line-height: 1.48;
+    font-size: clamp(0.96rem, 1.72vh, 1.08rem);
+    line-height: 1.42;
   }
 
   .intro-action-row {
-    gap: 0.6rem;
-    margin-top: 0.45rem;
+    gap: clamp(0.42rem, 0.7vh, 0.6rem);
+    margin-top: clamp(0.18rem, 0.35vh, 0.4rem);
   }
 
   .intro-primary-action,
   .intro-secondary-action,
   .intro-step-action {
-    min-height: 2.65rem;
-    padding: 0.68rem 1rem;
-    font-size: 0.9rem;
+    min-height: clamp(2.55rem, 4.35vh, 2.85rem);
+    padding: clamp(0.58rem, 0.92vh, 0.76rem) clamp(0.98rem, 1.35vw, 1.08rem);
+    font-size: clamp(0.9rem, 1.4vh, 0.98rem);
   }
 
   .intro-focus-area {
-    gap: 0.85rem;
+    gap: clamp(0.7rem, 1vh, 0.9rem);
   }
 
   .intro-timer-dial {
-    width: min(100%, 20rem);
+    width: min(100%, clamp(17rem, 29vh, 21rem));
   }
 
   .intro-timer-readout strong {
-    font-size: clamp(2.55rem, 4vw, 3.45rem);
+    font-size: clamp(2.7rem, 5.7vh, 3.75rem);
   }
 
   .intro-timer-mode {
-    padding: 0.45rem 0.78rem;
-    font-size: 0.82rem;
+    padding: clamp(0.38rem, 0.65vh, 0.5rem) clamp(0.68rem, 0.92vw, 0.84rem);
+    font-size: clamp(0.8rem, 1.12vh, 0.88rem);
   }
 
   .intro-timer-controls {
-    gap: 0.8rem;
+    gap: clamp(0.62rem, 0.85vh, 0.8rem);
   }
 
   .intro-icon-button {
-    width: 3.8rem;
-    height: 3.8rem;
+    width: clamp(3.45rem, 6vh, 4rem);
+    height: clamp(3.45rem, 6vh, 4rem);
   }
 
   .intro-steps-panel {
-    gap: 0.75rem;
-    padding: 0.85rem;
+    gap: clamp(0.62rem, 0.9vh, 0.82rem);
+    padding: clamp(0.84rem, 1.15vh, 0.98rem);
   }
 
   .intro-steps-header h2 {
-    font-size: 1.28rem;
+    font-size: clamp(1.22rem, 2.25vh, 1.42rem);
   }
 
   .intro-steps-header p {
-    margin-top: 0.45rem;
-    font-size: 0.84rem;
+    margin-top: clamp(0.22rem, 0.35vh, 0.4rem);
+    font-size: clamp(0.82rem, 1.16vh, 0.92rem);
   }
 
   .intro-step-list {
-    gap: 0.6rem;
+    gap: clamp(0.48rem, 0.68vh, 0.62rem);
   }
 
   .intro-step-card {
-    gap: 0.65rem;
-    padding: 0.72rem;
+    gap: clamp(0.55rem, 0.76vh, 0.7rem);
+    padding: clamp(0.68rem, 0.94vh, 0.82rem);
   }
 
   .intro-step-number {
-    width: 1.7rem;
-    height: 1.7rem;
-    font-size: 0.82rem;
+    width: clamp(1.58rem, 2.6vh, 1.85rem);
+    height: clamp(1.58rem, 2.6vh, 1.85rem);
+    font-size: clamp(0.8rem, 1.12vh, 0.9rem);
   }
 
   .intro-step-copy {
-    gap: 0.38rem;
+    gap: clamp(0.18rem, 0.3vh, 0.3rem);
   }
 
   .intro-step-copy strong {
-    font-size: 0.88rem;
+    font-size: clamp(0.88rem, 1.28vh, 0.98rem);
   }
 
   .intro-step-copy p,
   .intro-steps-footer {
-    font-size: 0.8rem;
-    line-height: 1.35;
+    font-size: clamp(0.76rem, 1.05vh, 0.84rem);
+    line-height: 1.28;
   }
 
   .intro-stats-panel {
-    padding: 0.18rem;
+    padding: clamp(0.1rem, 0.2vh, 0.16rem);
   }
 
   .intro-stat-card {
-    gap: 0.55rem;
-    padding: 0.72rem;
+    gap: clamp(0.34rem, 0.48vh, 0.5rem);
+    padding: clamp(0.58rem, 0.82vh, 0.72rem) clamp(0.68rem, 1vw, 0.82rem);
   }
 
   .intro-stat-label {
-    gap: 0.4rem;
-    font-size: 0.8rem;
+    gap: clamp(0.28rem, 0.4vh, 0.38rem);
+    font-size: clamp(0.72rem, 1vh, 0.8rem);
   }
 
   .intro-stat-card strong {
-    font-size: clamp(1.55rem, 2.4vw, 2.25rem);
+    font-size: clamp(1.45rem, 2.55vh, 2.1rem);
   }
 
   .intro-stat-card strong span {
-    font-size: 0.72rem;
+    font-size: clamp(0.66rem, 0.92vh, 0.74rem);
   }
 
   .intro-stat-card p {
-    font-size: 0.78rem;
-    line-height: 1.35;
+    font-size: clamp(0.72rem, 0.96vh, 0.8rem);
+    line-height: 1.22;
   }
 
   .timer-layout {
@@ -7589,40 +7750,697 @@ label,
   }
 
   .timer-overall-block {
-    gap: 0.62rem;
+    gap: 0.78rem;
   }
 
   .timer-overall-story {
-    padding: 0.8rem 0.9rem;
+    padding: 0.96rem 1.02rem;
   }
 
   .timer-overall-story strong {
-    font-size: 0.82rem;
+    font-size: 0.92rem;
   }
 
   .timer-overall-story span {
-    font-size: 0.73rem;
+    font-size: 0.82rem;
   }
 
   .timer-overall-bubbles {
-    gap: 0.6rem;
+    gap: 0.72rem;
   }
 
   .timer-overall-bubble {
-    padding: 0.72rem 0.88rem;
+    padding: 0.88rem 1rem;
   }
 
   .timer-overall-bubble span {
-    font-size: 0.66rem;
+    font-size: 0.74rem;
   }
 
   .timer-overall-bubble p {
-    font-size: 0.74rem;
+    font-size: 0.84rem;
+  }
+}
+
+@media (min-height: 901px) and (min-width: 1081px) {
+  .dashboard-main.is-introduction-view {
+    gap: 1.25rem;
+    padding-top: 1.35rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .intro-view {
+    gap: 1.1rem;
+  }
+
+  .intro-shell {
+    gap: 1rem;
+  }
+
+  .intro-grid {
+    gap: 1rem;
+  }
+
+  .intro-hero-panel,
+  .intro-steps-panel {
+    padding: 1.35rem;
+  }
+
+  .intro-hero-panel {
+    gap: 1.75rem;
+  }
+
+  .intro-copy {
+    gap: 1.15rem;
+    max-width: 30rem;
+  }
+
+  .intro-copy h2 {
+    font-size: clamp(3.6rem, 5.2vw, 5.4rem);
+  }
+
+  .intro-copy p {
+    font-size: 1.34rem;
+    line-height: 1.62;
+  }
+
+  .intro-action-row {
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  .intro-primary-action,
+  .intro-secondary-action,
+  .intro-step-action {
+    min-height: 3.35rem;
+    padding: 0.95rem 1.4rem;
+    font-size: 1.08rem;
+  }
+
+  .intro-focus-area {
+    gap: 1.5rem;
+  }
+
+  .intro-timer-dial {
+    width: min(100%, 29rem);
+  }
+
+  .intro-timer-readout strong {
+    font-size: clamp(3.9rem, 5.8vw, 5.6rem);
+  }
+
+  .intro-timer-mode {
+    padding: 0.62rem 1rem;
+    font-size: 0.98rem;
+  }
+
+  .intro-timer-controls {
+    gap: 1.15rem;
+  }
+
+  .intro-icon-button {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .intro-steps-panel {
+    gap: 1rem;
+  }
+
+  .intro-steps-header h2 {
+    font-size: 1.9rem;
+  }
+
+  .intro-steps-header p {
+    font-size: 1.04rem;
+  }
+
+  .intro-step-list {
+    gap: 0.85rem;
+  }
+
+  .intro-step-card {
+    gap: 0.95rem;
+    padding: 1rem;
+  }
+
+  .intro-step-number {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1rem;
+  }
+
+  .intro-step-copy strong {
+    font-size: 1.1rem;
+  }
+
+  .intro-step-copy p,
+  .intro-steps-footer {
+    font-size: 0.96rem;
+    line-height: 1.48;
+  }
+
+  .intro-stats-panel {
+    padding: 0.24rem;
+  }
+
+  .intro-stat-card {
+    gap: 0.65rem;
+    padding: 0.95rem 1rem;
+  }
+
+  .intro-stat-label {
+    font-size: 0.94rem;
+  }
+
+  .intro-stat-card strong {
+    font-size: clamp(2.1rem, 3.5vw, 3rem);
+  }
+
+  .intro-stat-card strong span {
+    font-size: 0.88rem;
+  }
+
+  .intro-stat-card p {
+    font-size: 0.92rem;
+    line-height: 1.38;
   }
 }
 
 @media (min-height: 801px) and (min-width: 1081px) {
   .timer-info-pane {
     transform: translate(-5rem, 6.5rem);
+  }
+}
+
+/* Introduction panel profiles by device class */
+@media (max-width: 640px) {
+  .intro-view.is-viewport-fit {
+    overflow: visible;
+  }
+
+  .intro-shell {
+    grid-template-rows: auto auto auto;
+    gap: 0.9rem;
+  }
+
+  .intro-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .intro-hero-panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .intro-copy {
+    gap: 0.85rem;
+    padding-left: 0;
+    max-width: none;
+    transform: none;
+  }
+
+  .intro-copy h2 {
+    font-size: clamp(2.6rem, 9vw, 3.5rem);
+  }
+
+  .intro-copy p {
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .intro-action-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+    margin-top: 0.35rem;
+  }
+
+  .intro-primary-action,
+  .intro-secondary-action,
+  .intro-step-action {
+    width: 100%;
+    min-height: 3.15rem;
+    font-size: 1rem;
+  }
+
+  .intro-focus-area {
+    gap: 1rem;
+    padding-top: 0.2rem;
+  }
+
+  .intro-timer-dial {
+    width: min(100%, 18rem);
+  }
+
+  .intro-timer-readout strong {
+    font-size: clamp(3rem, 12vw, 4rem);
+  }
+
+  .intro-icon-button {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .intro-steps-panel {
+    padding: 1rem;
+    gap: 0.85rem;
+  }
+
+  .intro-steps-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .intro-steps-header p {
+    font-size: 0.95rem;
+  }
+
+  .intro-step-card {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    padding: 0.9rem;
+  }
+
+  .intro-step-number {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .intro-step-copy strong {
+    font-size: 1rem;
+  }
+
+  .intro-step-copy p,
+  .intro-steps-footer {
+    font-size: 0.92rem;
+  }
+
+  .intro-stats-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .intro-stat-card,
+  .intro-stat-card + .intro-stat-card,
+  .intro-stat-card:nth-child(3),
+  .intro-stat-card:nth-child(4) {
+    border-left: 0;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .intro-stat-card:first-child {
+    border-top: 0;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1080px) {
+  .intro-view.is-viewport-fit {
+    overflow: visible;
+  }
+
+  .intro-shell {
+    grid-template-rows: auto auto auto;
+    gap: 1rem;
+  }
+
+  .intro-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .intro-hero-panel {
+    grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
+    gap: 1.2rem;
+    padding: 1.15rem;
+    min-height: auto;
+  }
+
+  .intro-copy {
+    max-width: none;
+    padding-left: 0;
+    transform: none;
+  }
+
+  .intro-copy h2 {
+    font-size: clamp(3rem, 6vw, 4.2rem);
+  }
+
+  .intro-copy p {
+    font-size: 1.08rem;
+    line-height: 1.5;
+  }
+
+  .intro-primary-action,
+  .intro-secondary-action,
+  .intro-step-action {
+    min-height: 3.05rem;
+    font-size: 1rem;
+  }
+
+  .intro-timer-dial {
+    width: min(100%, 19.5rem);
+  }
+
+  .intro-timer-readout strong {
+    font-size: clamp(3.1rem, 7vw, 4.3rem);
+  }
+
+  .intro-icon-button {
+    width: 4.2rem;
+    height: 4.2rem;
+  }
+
+  .intro-steps-panel {
+    padding: 1.05rem;
+    gap: 0.9rem;
+  }
+
+  .intro-steps-header h2 {
+    font-size: 1.7rem;
+  }
+
+  .intro-steps-header p {
+    font-size: 0.98rem;
+  }
+
+  .intro-step-copy strong {
+    font-size: 1rem;
+  }
+
+  .intro-step-copy p,
+  .intro-steps-footer {
+    font-size: 0.9rem;
+  }
+
+  .intro-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .intro-stat-card:nth-child(3),
+  .intro-stat-card:nth-child(4) {
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .intro-stat-card:nth-child(3) {
+    border-left: 0;
+  }
+}
+
+@media (min-width: 1081px) and (max-height: 900px) {
+  .intro-shell {
+    gap: 0.72rem;
+  }
+
+  .intro-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.78fr);
+    gap: 0.75rem;
+  }
+
+  .intro-hero-panel {
+    grid-template-columns: minmax(16rem, 0.95fr) minmax(15rem, 1.05fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .intro-copy {
+    max-width: 22rem;
+  }
+
+  .intro-copy h2 {
+    font-size: clamp(2.7rem, 4.35vh, 3.55rem);
+  }
+
+  .intro-copy p {
+    font-size: clamp(1.06rem, 1.62vh, 1.14rem);
+    line-height: 1.38;
+  }
+
+  .intro-action-row {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    margin-top: 0.28rem;
+  }
+
+  .intro-primary-action,
+  .intro-secondary-action,
+  .intro-step-action {
+    min-height: 2.4rem;
+    padding: 0.56rem 0.84rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .intro-focus-area {
+    gap: 0.8rem;
+  }
+
+  .intro-timer-dial {
+    width: min(100%, 20rem);
+  }
+
+  .intro-timer-readout strong {
+    font-size: clamp(2.9rem, 5vh, 3.8rem);
+  }
+
+  .intro-timer-mode {
+    font-size: 0.84rem;
+  }
+
+  .intro-icon-button {
+    width: 3.9rem;
+    height: 3.9rem;
+  }
+
+  .intro-steps-panel {
+    gap: 0.62rem;
+    padding: 0.82rem;
+  }
+
+  .intro-steps-header h2 {
+    font-size: 1.28rem;
+  }
+
+  .intro-steps-header p {
+    font-size: 0.8rem;
+  }
+
+  .intro-step-card {
+    gap: 0.58rem;
+    padding: 0.68rem;
+  }
+
+  .intro-step-copy strong {
+    font-size: 0.88rem;
+  }
+
+  .intro-step-copy p,
+  .intro-steps-footer {
+    font-size: 0.76rem;
+    line-height: 1.24;
+  }
+
+  .intro-step-action {
+    min-height: 2.4rem;
+    font-size: 0.86rem;
+  }
+
+  .intro-stat-card {
+    padding: 0.78rem;
+  }
+
+  .intro-stat-card strong {
+    font-size: clamp(1.6rem, 2.6vh, 2.2rem);
+  }
+
+  .timer-experience-compact {
+    gap: 0.45rem;
+    min-height: 0;
+  }
+
+  .timer-experience-compact .panel-header {
+    margin-bottom: 0.35rem;
+  }
+
+  .timer-experience-compact .timer-layout {
+    gap: 0.35rem;
+    min-height: 0;
+  }
+
+  .timer-experience-compact .timer-dial-shell {
+    gap: 0.35rem;
+  }
+
+  .timer-experience-compact .timer-hero {
+    gap: 0.3rem;
+    min-height: 0;
+    transform: translateY(-1.35rem);
+  }
+
+  .timer-experience-compact .timer-dial {
+    width: min(100%, 12.35rem);
+  }
+
+  .timer-experience-compact .timer-hero-display {
+    font-size: clamp(2.1rem, 4vw, 2.8rem);
+  }
+
+  .timer-experience-compact .timer-mode-pill {
+    min-height: 1.6rem;
+    padding: 0 0.54rem;
+    font-size: 0.62rem;
+  }
+
+  .timer-experience-compact .timer-command-row {
+    width: min(100%, 7.8rem);
+    gap: 0.35rem;
+    transform: none;
+  }
+
+  .timer-experience-compact .timer-command-button {
+    min-height: 2.25rem;
+    width: 2.25rem;
+  }
+
+  .timer-experience-compact .timer-command-button-primary {
+    width: 2.55rem;
+    min-height: 2.55rem;
+  }
+}
+
+@media (min-width: 1081px) and (min-height: 901px) {
+  .dashboard-main.is-introduction-view {
+    gap: 0.85rem;
+    padding-top: 0.9rem;
+    padding-bottom: 0.85rem;
+    overflow: hidden;
+  }
+
+  .intro-view {
+    gap: 0.8rem;
+  }
+
+  .intro-shell {
+    gap: 0.72rem;
+  }
+
+  .intro-grid {
+    grid-template-columns: minmax(0, 1.72fr) minmax(22rem, 0.88fr);
+    gap: 0.8rem;
+  }
+
+  .intro-hero-panel {
+    grid-template-columns: minmax(21rem, 1fr) minmax(22rem, 1fr);
+    gap: 1.25rem;
+    padding: 1.05rem;
+  }
+
+  .intro-copy {
+    gap: 0.82rem;
+    max-width: 25rem;
+  }
+
+  .intro-copy h2 {
+    font-size: clamp(3rem, 4.3vw, 4.1rem);
+  }
+
+  .intro-copy p {
+    font-size: 1.14rem;
+    line-height: 1.46;
+  }
+
+  .intro-primary-action,
+  .intro-secondary-action,
+  .intro-step-action {
+    min-height: 3.05rem;
+    padding: 0.8rem 1.18rem;
+    font-size: 0.98rem;
+  }
+
+  .intro-focus-area {
+    gap: 1.2rem;
+  }
+
+  .intro-timer-dial {
+    width: min(100%, 27rem);
+  }
+
+  .intro-timer-readout strong {
+    font-size: clamp(3.9rem, 5.6vw, 5.2rem);
+  }
+
+  .intro-timer-mode {
+    padding: 0.52rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .intro-icon-button {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .intro-steps-panel {
+    gap: 0.9rem;
+    padding: 1.15rem;
+  }
+
+  .intro-steps-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .intro-steps-header p {
+    font-size: 0.98rem;
+  }
+
+  .intro-step-card {
+    gap: 0.92rem;
+    padding: 1rem;
+  }
+
+  .intro-step-number {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1rem;
+  }
+
+  .intro-step-copy strong {
+    font-size: 1.08rem;
+  }
+
+  .intro-step-copy p,
+  .intro-steps-footer {
+    font-size: 0.94rem;
+    line-height: 1.4;
+  }
+
+  .intro-step-action {
+    min-height: 2.85rem;
+    font-size: 0.96rem;
+  }
+
+  .intro-stat-card {
+    gap: 0.45rem;
+    padding: 0.72rem 0.82rem;
+  }
+
+  .intro-stat-label {
+    font-size: 0.78rem;
+  }
+
+  .intro-stat-card strong {
+    font-size: clamp(1.65rem, 3vw, 2.35rem);
+  }
+
+  .intro-stat-card strong span {
+    font-size: 0.72rem;
+  }
+
+  .intro-stat-card p {
+    font-size: 0.76rem;
+    line-height: 1.18;
+  }
+
+  .timer-experience-compact .timer-hero {
+    transform: translateY(-2.6rem);
   }
 }

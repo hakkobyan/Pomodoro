@@ -14,7 +14,6 @@ import {
   ListTodo,
   Menu,
   Plus,
-  Pencil,
   Pause,
   Play,
   RotateCcw,
@@ -360,12 +359,44 @@ function playTimerBell(audioContext) {
     oscillator.type = "sine";
     oscillator.frequency.setValueAtTime(frequency, startsAt);
     gain.gain.setValueAtTime(0.0001, startsAt);
-    gain.gain.exponentialRampToValueAtTime(0.2, startsAt + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.32, startsAt + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, startsAt + 0.16);
     oscillator.connect(gain);
     gain.connect(audioContext.destination);
     oscillator.start(startsAt);
     oscillator.stop(startsAt + 0.18);
+  });
+}
+
+function playTimerModeSound(audioContext, nextMode) {
+  const now = audioContext.currentTime;
+  const notes =
+    nextMode === "rest"
+      ? [
+          { frequency: 659.25, duration: 0.16, gain: 0.22 },
+          { frequency: 783.99, duration: 0.18, gain: 0.24 },
+          { frequency: 987.77, duration: 0.24, gain: 0.26 },
+        ]
+      : [
+          { frequency: 523.25, duration: 0.16, gain: 0.2 },
+          { frequency: 659.25, duration: 0.18, gain: 0.22 },
+          { frequency: 783.99, duration: 0.22, gain: 0.24 },
+        ];
+
+  notes.forEach((note, index) => {
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const startsAt = now + index * 0.12;
+
+    oscillator.type = nextMode === "rest" ? "triangle" : "sine";
+    oscillator.frequency.setValueAtTime(note.frequency, startsAt);
+    gain.gain.setValueAtTime(0.0001, startsAt);
+    gain.gain.exponentialRampToValueAtTime(note.gain, startsAt + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startsAt + note.duration);
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(startsAt);
+    oscillator.stop(startsAt + note.duration + 0.02);
   });
 }
 
@@ -552,7 +583,7 @@ function buildOverallInsights({
     body: `Sessions: ${sessions.length}. Focus: ${formatSpentTime(totalFocusSeconds)}. Average session: ${formatSpentTime(averageSessionSeconds)}. Completion: ${completionRate}%. Focused days: ${focusedDays}.`,
   };
   const startIndex = advicePool.length > 0 ? insightCycle % advicePool.length : 0;
-  const rotatingAdvice = Array.from({ length: Math.min(2, advicePool.length) }, (_, offset) => {
+  const rotatingAdvice = Array.from({ length: Math.min(3, advicePool.length) }, (_, offset) => {
     const index = (startIndex + offset) % advicePool.length;
     return advicePool[index];
   });
@@ -1311,11 +1342,13 @@ export default function App() {
 
           if (timerMode === "focus") {
             persistTaskRemainingFocus(activeTaskId, focusDuration);
+            playTimerTransitionSound("rest");
             setTimerMode("rest");
             setTimerRunning(true);
             return breakDuration;
           }
 
+          playTimerTransitionSound("focus");
           setTimerMode("focus");
           setTimerRunning(false);
           return focusDuration;
@@ -1593,12 +1626,33 @@ export default function App() {
     return audioContextRef.current;
   }
 
-  function ringTimerBell() {
+  function withTimerAudio(playback) {
     const audioContext = ensureTimerAudio();
 
-    if (audioContext) {
-      playTimerBell(audioContext);
+    if (!audioContext) {
+      return;
     }
+
+    const play = () => playback(audioContext);
+
+    if (audioContext.state === "running") {
+      play();
+      return;
+    }
+
+    audioContext.resume().then(play).catch(() => {});
+  }
+
+  function ringTimerBell() {
+    withTimerAudio((audioContext) => {
+      playTimerBell(audioContext);
+    });
+  }
+
+  function playTimerTransitionSound(nextMode) {
+    withTimerAudio((audioContext) => {
+      playTimerModeSound(audioContext, nextMode);
+    });
   }
 
   function startTaskSessionIfNeeded() {
@@ -1822,16 +1876,6 @@ export default function App() {
     moveSelectedSession(deltaX < 0 ? 1 : -1);
   }
 
-  function openCardEditor() {
-    if (activeView === "Sessions") {
-      setDraftSessionOrder(sessions.map((session) => session.id));
-    } else {
-      setDraftCardOrder(cardOrder);
-    }
-    setLayoutEditMode(true);
-    closeSettings();
-  }
-
   function saveCardLayout() {
     if (activeView === "Sessions") {
       setSessions((currentSessions) => {
@@ -1908,7 +1952,7 @@ export default function App() {
                   <span>{overallStory}</span>
                 </div>
                 <div className="timer-overall-bubbles">
-                  {overallInsights.slice(0, 3).map((insight) => (
+                  {overallInsights.map((insight) => (
                     <article
                       key={insight.id}
                       className={cn("timer-overall-bubble", `timer-overall-bubble-${insight.tone}`)}
@@ -2479,15 +2523,6 @@ export default function App() {
                 />
               </label>
             </div>
-            <button
-              type="button"
-              className="settings-action-button"
-              aria-label="Edit cards"
-              onClick={openCardEditor}
-            >
-              <Pencil aria-hidden="true" size={16} strokeWidth={2.5} />
-              <span>Edit cards</span>
-            </button>
             <button type="button" onClick={closeSettings}>
               Close
             </button>
