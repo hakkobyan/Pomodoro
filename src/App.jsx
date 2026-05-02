@@ -2417,12 +2417,12 @@ export default function App() {
                   className="session-action"
                   type="button"
                   onClick={() => {
-                    if (summarySession) {
-                      removeSession(summarySession.id);
+                    if (selectedSession) {
+                      removeSession(selectedSession.id);
                     }
                   }}
-                  disabled={!summarySession || layoutEditMode}
-                  aria-label="Delete session"
+                  disabled={!selectedSession || layoutEditMode}
+                  aria-label="Delete selected session"
                 >
                   <Trash2 aria-hidden="true" size={16} strokeWidth={2.4} />
                 </button>
@@ -2745,11 +2745,18 @@ export default function App() {
                     key={session.id}
                     className={cn(
                       "sessions-grid-card",
+                      selectedSessionId === session.id && "is-selected",
                       layoutEditMode && "is-layout-editing",
                       draggedCardId === session.id && "is-dragging",
                     )}
                     data-session-id={session.id}
-                    onPointerDown={() => startCardDrag(session.id)}
+                    onPointerDown={() => {
+                      selectSession(session.id);
+
+                      if (layoutEditMode) {
+                        startCardDrag(session.id);
+                      }
+                    }}
                   >
                     <div className="sessions-grid-card-top">
                       <div className="sessions-grid-card-head">
