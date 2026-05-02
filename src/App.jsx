@@ -805,7 +805,9 @@ export default function App() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
   const [sessionName, setSessionName] = useState("");
-  const [navMenuOpen, setNavMenuOpen] = useState(false);
+  const [navMenuOpen, setNavMenuOpen] = useState(
+    () => typeof window !== "undefined" && window.innerWidth > 1080,
+  );
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsClosing, setSettingsClosing] = useState(false);
   const [focusMinutes, setFocusMinutes] = useState(DEFAULT_FOCUS_MINUTES);
@@ -989,9 +991,16 @@ export default function App() {
     ? `Best next step: continue "${nextOpenTask.text}".`
     : "Best next step: start a new focused task to build your next insight.";
 
+  function isDesktopViewport() {
+    return typeof window !== "undefined" && window.innerWidth > 1080;
+  }
+
   function openView(viewName) {
     setActiveView(viewName);
-    setNavMenuOpen(false);
+
+    if (!isDesktopViewport()) {
+      setNavMenuOpen(false);
+    }
   }
 
   function openTasksAndCreateTask() {
@@ -1013,18 +1022,6 @@ export default function App() {
     document.body.scrollTop = 0;
     dashboardMainRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }
-
-  useEffect(() => {
-    function syncNavMenuWithViewport() {
-      if (window.innerWidth > 1080) {
-        setNavMenuOpen(false);
-      }
-    }
-
-    syncNavMenuWithViewport();
-    window.addEventListener("resize", syncNavMenuWithViewport);
-    return () => window.removeEventListener("resize", syncNavMenuWithViewport);
-  }, []);
 
   useEffect(() => {
     function syncPointer(event) {
@@ -2314,7 +2311,7 @@ export default function App() {
 
   return (
     <main
-      className="app-shell dashboard-shell"
+      className={cn("app-shell dashboard-shell", navMenuOpen ? "is-sidebar-open" : "is-sidebar-collapsed")}
       aria-label="Pomodoro dashboard"
       style={{
         "--card-transparency": `${cardTransparency}%`,
@@ -2330,20 +2327,6 @@ export default function App() {
             </div>
             <div className="menu-title">WorkCycle</div>
           </div>
-          <button
-            type="button"
-            className="dashboard-menu-toggle"
-            aria-label={navMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={navMenuOpen}
-            aria-controls="dashboard-navigation"
-            onClick={() => setNavMenuOpen((currentValue) => !currentValue)}
-          >
-            {navMenuOpen ? (
-              <X aria-hidden="true" size={18} strokeWidth={2.4} />
-            ) : (
-              <Menu aria-hidden="true" size={18} strokeWidth={2.4} />
-            )}
-          </button>
         </div>
         <div className="dashboard-sidebar-panel">
           <nav id="dashboard-navigation" className="dashboard-nav">
@@ -2354,10 +2337,7 @@ export default function App() {
                   key={item.label}
                   type="button"
                   className={cn("dashboard-nav-item", activeView === item.label && "is-active")}
-                  onClick={() => {
-                    setActiveView(item.label);
-                    setNavMenuOpen(false);
-                  }}
+                  onClick={() => openView(item.label)}
                 >
                   <Icon aria-hidden="true" size={17} strokeWidth={2.1} />
                   <span>{item.label}</span>
@@ -2402,8 +2382,24 @@ export default function App() {
         className={cn("dashboard-main", activeView === "Introduction" && "is-introduction-view")}
       >
         <header className={cn("dashboard-header", activeView === "Timer" && "dashboard-header-timer")}>
-          <div className="dashboard-header-copy">
-            <h1>{activeView}</h1>
+          <div className="dashboard-header-title-row">
+            <button
+              type="button"
+              className="dashboard-header-menu-toggle"
+              aria-label={navMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={navMenuOpen}
+              aria-controls="dashboard-navigation"
+              onClick={() => setNavMenuOpen((currentValue) => !currentValue)}
+            >
+              {navMenuOpen ? (
+                <ChevronLeft aria-hidden="true" size={18} strokeWidth={2.4} />
+              ) : (
+                <Menu aria-hidden="true" size={18} strokeWidth={2.4} />
+              )}
+            </button>
+            <div className="dashboard-header-copy">
+              <h1>{activeView}</h1>
+            </div>
           </div>
           <div className="dashboard-header-actions">
             {activeView === "Sessions" ? (
